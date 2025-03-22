@@ -1,0 +1,1 @@
+ C:\\Users\\teodo\\OneDrive\\Imagens\\Documentos\\trabalho-flutter\\trabalho-flutter\\uniclass\\.dart_tool\\flutter_build\\8d571723e596efa555b2708e15c3605a\\native_assets.yaml: 
