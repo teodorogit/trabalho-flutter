@@ -1,20 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:uniclass/app_homepage.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-void main() {
-  runApp(const MainApp());
-}
+void main() async {
+  WidgetsFlutterBinding();
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+  await Supabase.initialize(
+    url: 'https://ddxpwnaqhwtuurjarzgo.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkeHB3bmFxaHd0dXVyamFyemdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI2NTkwNzUsImV4cCI6MjA1ODIzNTA3NX0.IZGrzstRfBY7Zh6WuoysKwxGJZvFEGbFxdEOPlu4X6M',
+  );
 
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Uniclass!'),
-        ),
-      ),
-    );
-  }
+  runApp(const AppWidget());
 }
