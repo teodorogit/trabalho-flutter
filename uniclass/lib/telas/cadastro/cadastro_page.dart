@@ -29,7 +29,6 @@ class _CadastroPageState extends State<CadastroPage> {
   Future<bool> cadastrarUsuario() async {
     final supabase = Supabase.instance.client;
 
-    // Verifica se as senhas são iguais
     if (senhaController.text != confirmaSenhaController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('As senhas não coincidem!')),
@@ -45,14 +44,6 @@ class _CadastroPageState extends State<CadastroPage> {
         password: senhaController.text,
       );
 
-      print("Nome: ${nomeController.text}");
-      print("RA: ${raController.text}");
-      print("Curso: $cursoSelecionado");
-      print("Semestre: ${semestreController.text}");
-      print("Email: ${emailController.text}");
-      print("Senha: ${senhaController.text}");
-
-      // Adicionar usuário na tabela "usuarios"
       await supabase.from('usuarios').insert({
         'nome': nomeController.text,
         'ra': raController.text,
@@ -81,7 +72,7 @@ class _CadastroPageState extends State<CadastroPage> {
             width: double.infinity,
             height: double.infinity,
             child: Padding(
-              padding: const EdgeInsets.all(80),
+              padding: const EdgeInsets.all(35),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -93,7 +84,7 @@ class _CadastroPageState extends State<CadastroPage> {
                         labelText: 'Nome',
                         border: OutlineInputBorder()),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 10),
                   TextField(
                     controller: raController,
                     decoration: InputDecoration(
@@ -102,8 +93,7 @@ class _CadastroPageState extends State<CadastroPage> {
                         labelText: 'RA',
                         border: OutlineInputBorder()),
                   ),
-                  const SizedBox(height: 15),
-
+                  const SizedBox(height: 10),
                   // 🔽 Dropdown substituindo o campo "Curso"
                   DropdownButtonFormField<String>(
                     decoration: InputDecoration(
@@ -127,7 +117,7 @@ class _CadastroPageState extends State<CadastroPage> {
                     }).toList(),
                   ),
 
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 10),
                   TextField(
                     controller: semestreController,
                     decoration: InputDecoration(
@@ -136,7 +126,7 @@ class _CadastroPageState extends State<CadastroPage> {
                         labelText: 'Semestre',
                         border: OutlineInputBorder()),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 10),
                   TextField(
                     controller: emailController,
                     decoration: InputDecoration(
@@ -145,7 +135,7 @@ class _CadastroPageState extends State<CadastroPage> {
                         labelText: 'Email',
                         border: OutlineInputBorder()),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 10),
                   TextField(
                     obscureText: true,
                     controller: senhaController,
@@ -155,7 +145,7 @@ class _CadastroPageState extends State<CadastroPage> {
                         labelText: 'Senha',
                         border: OutlineInputBorder()),
                   ),
-                  const SizedBox(height: 15),
+                  const SizedBox(height: 12),
                   TextField(
                     obscureText: true,
                     controller: confirmaSenhaController,
@@ -165,7 +155,7 @@ class _CadastroPageState extends State<CadastroPage> {
                         labelText: 'Confirme a senha',
                         border: OutlineInputBorder()),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -176,7 +166,7 @@ class _CadastroPageState extends State<CadastroPage> {
                             Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => LoginPage()),
+                                  builder: (context) => LoginScreen()),
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -186,6 +176,16 @@ class _CadastroPageState extends State<CadastroPage> {
                           }
                         },
                         child: Text('Cadastrar'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginScreen()),
+                          );
+                        },
+                        child: Text('Voltar'),
                       ),
                     ],
                   ),

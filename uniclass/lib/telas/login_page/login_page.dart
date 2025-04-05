@@ -1,18 +1,95 @@
 import 'package:flutter/material.dart';
+import 'package:uniclass/telas/cadastro/cadastro_page.dart';
+import 'package:uniclass/widgets/custom_text_field.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
-
+class LoginScreen extends StatefulWidget {
   @override
-  State<LoginPage> createState() => _MyWidgetState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _MyWidgetState extends State<LoginPage> {
+class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  final _usernameController = TextEditingController();
+  final _passwordController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
-      body: Center(child: Text('Tela de Login')),
+      appBar: AppBar(
+        title: Text(
+          'Bem vindo ao UniClass',
+          style: TextStyle(color: Colors.orange),
+        ),
+        backgroundColor: Colors.green[700],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: <Widget>[
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 500),
+                child: CustomTextField(
+                  controller: _usernameController,
+                  label: 'Username',
+                  obscureText: true,
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor digite  seu nome';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              SizedBox(height: 20),
+              CustomTextField(
+                controller: _passwordController,
+                label: 'Senha',
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor digite sua senha';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 20),
+              Row(
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(
+                          255, 195, 251, 198), // Alterado para laranja
+                    ),
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Logging in...')),
+                        );
+                      }
+                    },
+                    child: Text('Login'),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(
+                          255, 195, 251, 198), // Alterado para laranja
+                    ),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => CadastroPage()),
+                      );
+                    },
+                    child: Text('Cadastrar'),
+                  ),
+                ],
+              )
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

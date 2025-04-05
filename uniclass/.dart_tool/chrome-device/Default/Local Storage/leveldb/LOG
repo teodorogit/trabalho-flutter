@@ -1,3 +1,8 @@
-2025/03/22-15:14:01.400 2210 Reusing MANIFEST C:\Users\teodo\AppData\Local\Temp\flutter_tools.21bf284c\flutter_tools_chrome_device.87bd67c0\Default\Local Storage\leveldb/MANIFEST-000001
-2025/03/22-15:14:01.409 2210 Recovering log #3
-2025/03/22-15:14:01.411 2210 Reusing old log C:\Users\teodo\AppData\Local\Temp\flutter_tools.21bf284c\flutter_tools_chrome_device.87bd67c0\Default\Local Storage\leveldb/000003.log 
+2025/04/05-13:26:26.611 16b8 Creating DB C:\Users\teodo\AppData\Local\Temp\flutter_tools.67cfc3d\flutter_tools_chrome_device.f9a424dc\Default\Local Storage\leveldb since it was missing.
+2025/04/05-13:26:26.640 16b8 Reusing MANIFEST C:\Users\teodo\AppData\Local\Temp\flutter_tools.67cfc3d\flutter_tools_chrome_device.f9a424dc\Default\Local Storage\leveldb/MANIFEST-000001
+2025/04/05-13:31:14.402 2dcc Level-0 table #5: started
+2025/04/05-13:31:14.412 2dcc Level-0 table #5: 51429 bytes OK
+2025/04/05-13:31:14.416 2dcc Delete type=0 #3
+2025/04/05-14:17:55.705 16b8 Level-0 table #7: started
+2025/04/05-14:17:55.710 16b8 Level-0 table #7: 61595 bytes OK
+2025/04/05-14:17:55.712 16b8 Delete type=0 #4
