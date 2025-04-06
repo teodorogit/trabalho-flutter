@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:uniclass/telas/cadastro/cadastro_page.dart';
 import 'package:uniclass/widgets/custom_text_field.dart';
+import 'package:uniclass/telas/validation/validation.dart';
+import 'package:uniclass/telas/home_page/home_page.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -11,6 +13,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _validation = Validation();
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: CustomTextField(
                   controller: _usernameController,
                   label: 'Username',
-                  obscureText: true,
+                  obscureText: false,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Por favor digite  seu nome';
@@ -62,11 +65,29 @@ class _LoginScreenState extends State<LoginScreen> {
                       backgroundColor: const Color.fromARGB(
                           255, 195, 251, 198), // Alterado para laranja
                     ),
-                    onPressed: () {
+                    onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Logging in...')),
+                        bool success = await _validation.validateUser(
+                          _usernameController.text,
+                          _passwordController.text,
                         );
+
+                        if (success) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Login realizado com sucesso!')),
+                          );
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const HomePage()),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Email ou senha inválidos.')),
+                          );
+                        }
                       }
                     },
                     child: Text('Login'),
