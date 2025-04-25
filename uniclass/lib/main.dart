@@ -3,7 +3,7 @@ import 'package:uniclass/app_homepage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
-  WidgetsFlutterBinding();
+  WidgetsFlutterBinding.ensureInitialized();
 
   await Supabase.initialize(
     url: 'https://ddxpwnaqhwtuurjarzgo.supabase.co',
