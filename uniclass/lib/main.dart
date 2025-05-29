@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:uniclass/View/home_page/app_homepage.dart';
+import 'package:uniclass/View/Pages/app_homepage.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {

@@ -1,0 +1,84 @@
+import 'package:flutter/material.dart';
+import 'package:uniclass/View/Constantes/app_colors.dart';
+
+class AppLayout extends StatelessWidget {
+  final String title;
+  final Widget child;
+
+  const AppLayout({super.key, required this.title, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Row(
+        children: [
+          // Sidebar
+          Container(
+            width: 200,
+            color: AppColors.highlightOrange,
+             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                DrawerHeader(
+                  child: Image.asset(
+                    'assets/images/uniclass.jpeg',
+                    width: 120,
+                  ),
+                ),
+                SidebarItem(label: 'Home', route: '/'),
+                SidebarItem(label: 'Ensalamento', route: '/Ensalamento'),
+                SidebarItem(label: 'Salas', route: '/Salas'),
+                SidebarItem(label: 'Turmas', route: '/Turmas'),
+                SidebarItem(label: 'Cadastros', route: '/Cadastros'),
+                Spacer(),
+                ListTile(
+                  leading: Icon(Icons.logout, color: Colors.white),
+                  title: Text('Sair', style: TextStyle(color: Colors.white)),
+                  onTap: (  ) {
+                    // lógica de logout
+                  },
+                ),
+              ],
+            ),
+          ),
+          // Conteúdo principal
+          Expanded(
+            child: Column(
+              children: [
+                Container(
+                  color: AppColors.primaryGreen,
+                  padding: EdgeInsets.all(16),
+                  width: double.infinity,
+                  child: Text(
+                    title,
+                    style: TextStyle(fontSize: 24, color: Colors.white),
+                  ),
+                ),
+                Expanded(child: child),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class SidebarItem extends StatelessWidget {
+  final String label;
+  final String route;
+
+  const SidebarItem({super.key, required this.label, required this.route});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(label, style: TextStyle(color: Colors.white)),
+      onTap: () {
+        if (ModalRoute.of(context)?.settings.name != route) {
+          Navigator.pushNamed(context, route);
+        }
+      },
+    );
+  }
+}

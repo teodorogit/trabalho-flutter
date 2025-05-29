@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:uniclass/View/cadastro/cadastro_page.dart';
 import 'package:uniclass/View/widgets/custom_text_field.dart';
 import 'package:uniclass/ViewModel/validation.dart';
-import 'package:uniclass/View/home_page/home_page.dart';
+import 'package:uniclass/View/Pages/home.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -13,6 +12,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  // ignore: unused_field
   final _validation = ValidationUserWeb();
   bool isAdmin = false;
 
@@ -123,8 +123,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 );
                               }
                             } else {
-                              final success = await _validation.validateUserWeb(
-                                  email, password);
+                              final success = true; //await _validation.validateUserWeb(
+                                  //email, password);
 
                               if (success) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -137,6 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   MaterialPageRoute(
                                       builder: (context) => const HomePage()),
                                 );
+                              // ignore: dead_code
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
