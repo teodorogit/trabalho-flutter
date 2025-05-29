@@ -13,7 +13,8 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _validation = ValidationUser();
+  final _validation = ValidationUserWeb();
+  bool isAdmin = false;
 
   @override
   void dispose() {
@@ -21,7 +22,6 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordController.dispose();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -38,108 +38,93 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-                  Text(
-                    'UNICLASS',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 2.0,
-                          color: Colors.black45,
-                          offset: Offset(1.5, 1.5),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.03),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.0001),
                   SizedBox(
-                    width: size.width * 0.7,
-                    height: size.height * 0.30,
+                    width: size.width * 2,
+                    height: size.height * 0.34,
                     child: Image.asset(
-                      'assets/images/Representacao-removebg-preview.png',
+                      'assets/images/uniclass.jpeg',
                       fit: BoxFit.contain,
                     ),
                   ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.09),
-                  CustomTextField(
-                    controller: _usernameController,
-                    label: 'Email',
-                    obscureText: false,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor digite seu email';
-                      }
-                      return null;
-                    },
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.07),
+                  Center(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.6,
+                      child: CustomTextField(
+                        controller: _usernameController,
+                        label: 'Email',
+                        obscureText: false,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor digite seu email';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 16),
-                  CustomTextField(
-                    controller: _passwordController,
-                    label: 'Senha',
-                    obscureText: true,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor digite sua senha';
-                      }
-                      return null;
-                    },
+                  Center(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.6,
+                      child: CustomTextField(
+                        controller: _passwordController,
+                        label: 'Senha',
+                        obscureText: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor digite sua senha';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          style: OutlinedButton.styleFrom(
-                            backgroundColor: const Color(
-                                0x4278DA49), 
-                            side: BorderSide(
-                              color: Colors
-                                  .green[800]!, 
-                              width: 1,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(
-                                  12), 
-                            ),
-                            padding: const EdgeInsets.symmetric(vertical: 16),
+                  Center(
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.6,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              const Color.fromARGB(255, 120, 218, 73),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          onPressed: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => CadastroPage()),
-                            );
-                          },
-                          child: Text(
-                            'Cadastrar',
-                            style: TextStyle(
-                              color: Colors
-                                  .green[700], 
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromARGB(255, 120, 218, 73),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            padding: EdgeInsets.symmetric(vertical: 16),
-                          ),
-                          onPressed: () async {
-                            if (_formKey.currentState!.validate()) {
-                              bool success = await _validation.validateUser(
-                                _usernameController.text,
-                                _passwordController.text,
-                              );
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            final email = _usernameController.text;
+                            final password = _passwordController.text;
+
+                            if (isAdmin) {
+                              final validationAdm = ValidationWebUserAdm();
+                              final (success, isReallyAdm) = await validationAdm
+                                  .validateAdm(email, password);
+
+                              if (success && isReallyAdm) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          'Login de administrador realizado com sucesso!')),
+                                );
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const HomePage()),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          'Acesso negado: administrador inválido.')),
+                                );
+                              }
+                            } else {
+                              final success = await _validation.validateUserWeb(
+                                  email, password);
 
                               if (success) {
                                 ScaffoldMessenger.of(context).showSnackBar(
@@ -160,17 +145,35 @@ class _LoginScreenState extends State<LoginScreen> {
                                 );
                               }
                             }
-                          },
-                          child: const Text('Entrar'),
-                        ),
+                          }
+                        },
+                        child: const Text('Entrar'),
                       ),
-                    ],
+                    ),
                   ),
                   const SizedBox(height: 32),
                   Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Acessar como administrador",
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                      Switch(
+                        activeColor: const Color.fromARGB(255, 239, 155, 52),
+                        value: isAdmin,
+                        onChanged: (bool value) {
+                          setState(() {
+                            isAdmin = value;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  Column(
                     children: [
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.5,
+                        width: MediaQuery.of(context).size.width * 0.4,
                         child: Divider(thickness: 1),
                       ),
                       const SizedBox(height: 4),
@@ -188,8 +191,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.0001),
                   SizedBox(
-                    width: size.width * 0.40,
-                    height: size.height * 0.20,
+                    width: size.width * 0.60,
+                    height: size.height * 0.13,
                     child: Image.asset(
                       'assets/images/logoUnicv-removebg-preview.png',
                       fit: BoxFit.contain,

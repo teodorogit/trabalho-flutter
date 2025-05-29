@@ -27,7 +27,7 @@
     },
     {
       "name": "async",
-      "rootUri": "file:///C:/Users/Dyames/AppData/Local/Pub/Cache/hosted/pub.dev/async-2.12.0",
+      "rootUri": "file:///C:/Users/Dyames/AppData/Local/Pub/Cache/hosted/pub.dev/async-2.13.0",
       "packageUri": "lib/",
       "languageVersion": "3.4"
     },
@@ -69,7 +69,7 @@
     },
     {
       "name": "fake_async",
-      "rootUri": "file:///C:/Users/Dyames/AppData/Local/Pub/Cache/hosted/pub.dev/fake_async-1.3.2",
+      "rootUri": "file:///C:/Users/Dyames/AppData/Local/Pub/Cache/hosted/pub.dev/fake_async-1.3.3",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
@@ -87,7 +87,7 @@
     },
     {
       "name": "flutter",
-      "rootUri": "file:///D:/Projetos/Dyames/flutter/packages/flutter",
+      "rootUri": "file:///D:/Projetos/Dyames/flutter_application_1/lib/flutter/packages/flutter",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     },
@@ -99,13 +99,13 @@
     },
     {
       "name": "flutter_test",
-      "rootUri": "file:///D:/Projetos/Dyames/flutter/packages/flutter_test",
+      "rootUri": "file:///D:/Projetos/Dyames/flutter_application_1/lib/flutter/packages/flutter_test",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     },
     {
       "name": "flutter_web_plugins",
-      "rootUri": "file:///D:/Projetos/Dyames/flutter/packages/flutter_web_plugins",
+      "rootUri": "file:///D:/Projetos/Dyames/flutter_application_1/lib/flutter/packages/flutter_web_plugins",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     },
@@ -183,7 +183,7 @@
     },
     {
       "name": "leak_tracker",
-      "rootUri": "file:///C:/Users/Dyames/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker-10.0.8",
+      "rootUri": "file:///C:/Users/Dyames/AppData/Local/Pub/Cache/hosted/pub.dev/leak_tracker-10.0.9",
       "packageUri": "lib/",
       "languageVersion": "3.2"
     },
@@ -357,7 +357,7 @@
     },
     {
       "name": "sky_engine",
-      "rootUri": "file:///D:/Projetos/Dyames/flutter/bin/cache/pkg/sky_engine",
+      "rootUri": "file:///D:/Projetos/Dyames/flutter_application_1/lib/flutter/bin/cache/pkg/sky_engine",
       "packageUri": "lib/",
       "languageVersion": "3.7"
     },
@@ -477,7 +477,7 @@
     },
     {
       "name": "vm_service",
-      "rootUri": "file:///C:/Users/Dyames/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-14.3.1",
+      "rootUri": "file:///C:/Users/Dyames/AppData/Local/Pub/Cache/hosted/pub.dev/vm_service-15.0.0",
       "packageUri": "lib/",
       "languageVersion": "3.3"
     },
@@ -518,10 +518,9 @@
       "languageVersion": "3.6"
     }
   ],
-  "generated": "2025-04-12T23:37:29.613081Z",
   "generator": "pub",
-  "generatorVersion": "3.7.2",
-  "flutterRoot": "file:///D:/Projetos/Dyames/flutter",
-  "flutterVersion": "3.29.2",
+  "generatorVersion": "3.8.0",
+  "flutterRoot": "file:///D:/Projetos/Dyames/flutter_application_1/lib/flutter",
+  "flutterVersion": "3.32.0",
   "pubCache": "file:///C:/Users/Dyames/AppData/Local/Pub/Cache"
 }
