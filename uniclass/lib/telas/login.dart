@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -14,18 +16,35 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Bem vindo ao UniClass',
-          style: TextStyle(color: Colors.orange),
-        ),
         backgroundColor: Colors.green[700],
+        elevation: 0,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start, // alinha à esquerda
             children: <Widget>[
+              // Logo no canto superior esquerdo
+              Image.asset(
+                'assets/unicv_logo_verde.png',
+                height: 60,
+              ),
+              const SizedBox(height: 10),
+
+              // Título da tela
+              const Text(
+                'Bem vindo ao UniClass',
+                style: TextStyle(
+                  color: Colors.orange,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 30),
+
+              // Campo de Username
               TextFormField(
                 controller: _usernameController,
                 decoration: InputDecoration(
@@ -41,11 +60,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor, entre com o seu username';
+                  } else if (value.length < 4) {
+                    return 'O username deve ter pelo menos 4 caracteres';
                   }
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
+
+              // Campo de Senha
               TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(
@@ -62,23 +85,27 @@ class _LoginScreenState extends State<LoginScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor, entre com sua senha';
+                  } else if (value.length < 6) {
+                    return 'A senha deve ter pelo menos 6 caracteres';
                   }
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
+
+              // Botão de Login
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[900], // Alterado para laranja
+                  backgroundColor: Colors.green[900],
                 ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Logging in...')),
+                      const SnackBar(content: Text('Logging in...')),
                     );
                   }
                 },
-                child: Text('Login'),
+                child: const Text('Login'),
               ),
             ],
           ),
