@@ -24,16 +24,13 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Form(
           key: _formKey,
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start, // alinha à esquerda
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              // Logo no canto superior esquerdo
               Image.asset(
                 'assets/unicv_logo_verde.png',
                 height: 60,
               ),
               const SizedBox(height: 10),
-
-              // Título da tela
               const Text(
                 'Bem vindo ao UniClass',
                 style: TextStyle(
@@ -43,13 +40,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
               const SizedBox(height: 30),
-
-              // Campo de Username
               TextFormField(
                 controller: _usernameController,
                 decoration: InputDecoration(
                   labelText: 'Username',
-                  labelStyle: TextStyle(color: Colors.green[700]),
+                  labelStyle: TextStyle(color: Colors.orange[700]),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 18.0,
+                    horizontal: 12.0,
+                  ),
                   enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.green[700]!),
                   ),
@@ -61,24 +61,27 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (value == null || value.isEmpty) {
                     return 'Por favor, entre com o seu username';
                   } else if (value.length < 4) {
-                    return 'O username deve ter pelo menos 4 caracteres';
+                    return 'O username deve conter pelo menos 4 caracteres';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 20),
-
-              // Campo de Senha
               TextFormField(
                 controller: _passwordController,
                 decoration: InputDecoration(
                   labelText: 'Senha',
-                  labelStyle: TextStyle(color: Colors.green[700]),
+                  labelStyle: TextStyle(color: Colors.orange[700]),
+                  floatingLabelBehavior: FloatingLabelBehavior.always,
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 18.0,
+                    horizontal: 12.0,
+                  ),
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.green[700]!),
+                    borderSide: BorderSide(color: const Color.fromARGB(255, 65, 152, 69)!),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: Colors.green[900]!),
+                    borderSide: BorderSide(color: const Color.fromARGB(255, 65, 152, 69)!),
                   ),
                 ),
                 obscureText: true,
@@ -86,17 +89,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (value == null || value.isEmpty) {
                     return 'Por favor, entre com sua senha';
                   } else if (value.length < 6) {
-                    return 'A senha deve ter pelo menos 6 caracteres';
+                    return 'A senha deve conter menos 6 caracteres';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 20),
-
-              // Botão de Login
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green[900],
+                  backgroundColor: Colors.green[700],
                 ),
                 onPressed: () {
                   if (_formKey.currentState!.validate()) {
@@ -105,7 +106,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     );
                   }
                 },
-                child: const Text('Login'),
+                child: const Text(
+                  'Login',
+                  style: TextStyle(color: Colors.orange),
+                ),
               ),
             ],
           ),
