@@ -1,4 +1,8 @@
 flutter/ephemeral/
+<<<<<<< HEAD
+=======
+.dart_tool/
+>>>>>>> d364ba25fc2d7b592261e60bb1228c6b6dc77afe
 
 # Visual Studio user-specific files.
 *.suo

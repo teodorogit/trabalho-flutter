@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
-import 'telas/login.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'telas/login_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Supabase.initialize(
+    url: 'https://ddxpwnaqhwtuurjarzgo.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRkeHB3bmFxaHd0dXVyamFyemdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI2NTkwNzUsImV4cCI6MjA1ODIzNTA3NX0.IZGrzstRfBY7Zh6WuoysKwxGJZvFEGbFxdEOPlu4X6M',
+  );
+
   runApp(const MyApp());
 }
 
@@ -15,7 +24,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: const LoginScreen(),
+      home: LoginScreen(), // Altere para AppHomePage() se quiser ir direto pra home
     );
   }
 }
