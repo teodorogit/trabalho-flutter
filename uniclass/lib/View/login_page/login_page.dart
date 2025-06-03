@@ -12,7 +12,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  // ignore: unused_field
   final _validation = ValidationUserWeb();
   bool isAdmin = false;
 
@@ -99,52 +98,61 @@ class _LoginScreenState extends State<LoginScreen> {
                             final email = _usernameController.text;
                             final password = _passwordController.text;
 
-                            if (isAdmin) {
-                              final validationAdm = ValidationWebUserAdm();
-                              final (success, isReallyAdm) = await validationAdm
-                                  .validateAdm(email, password);
+                            final userTypeAdm = await ValidationUserWeb()
+                                .validateUserWeb(email, password, isAdmin);
 
-                              if (success && isReallyAdm) {
+                            if (userTypeAdm == true) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'Login de administrador realizado com sucesso!'),
+                                ),
+                              );
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const HomePage()),
+                              );
+                            } else if (userTypeAdm == false) {
+                              final userType = await ValidationUserWeb()
+                                  .validate(email, password, isAdmin);
+
+                              if (userType == true) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                      content: Text(
-                                          'Login de administrador realizado com sucesso!')),
+                                    content:
+                                        Text('Login realizado com sucesso!'),
+                                  ),
                                 );
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const HomePage()),
+                                      builder: (context) => LoginScreen()),//copiar tela para usuário padrão
                                 );
                               } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
+                                if (isAdmin) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
                                       content: Text(
-                                          'Acesso negado: administrador inválido.')),
-                                );
-                              }
-                            } else {
-                              final success = true; //await _validation.validateUserWeb(
-                                  //email, password);
-
-                              if (success) {
+                                          'O e-mail informado  não é do adimistrador. Desmarque a flag "Acessar como Administrador"'),
+                                    ),
+                                  );
+                                  return;
+                                }
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                      content:
-                                          Text('Login realizado com sucesso!')),
-                                );
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const HomePage()),
-                                );
-                              // ignore: dead_code
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content:
-                                          Text('Email ou senha inválidos.')),
+                                    content: Text(
+                                        'O e-mail informado é do administrador. Marque a flag "Acessar como Administrador"'),
+                                  ),
                                 );
                               }
+                            } else {                             
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                      'Email ou senha inválidos, revise os dados preenchidos!'),
+                                ),
+                              );
                             }
                           }
                         },
@@ -166,6 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         onChanged: (bool value) {
                           setState(() {
                             isAdmin = value;
+                            print('O valor da flag: ${isAdmin}');
                           });
                         },
                       ),

@@ -7,7 +7,7 @@ class AppWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Cadastro',
+      title: 'Login',
       home: LoginScreen(),
       debugShowCheckedModeBanner: false,
     );

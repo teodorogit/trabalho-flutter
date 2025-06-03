@@ -10,6 +10,7 @@ class AppLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Row(
         children: [
           // Sidebar
@@ -29,6 +30,7 @@ class AppLayout extends StatelessWidget {
                 SidebarItem(label: 'Ensalamento', route: '/Ensalamento'),
                 SidebarItem(label: 'Salas', route: '/Salas'),
                 SidebarItem(label: 'Turmas', route: '/Turmas'),
+                SidebarItem(label: 'Cursos', route: '/Cursos'),
                 SidebarItem(label: 'Cadastros', route: '/Cadastros'),
                 Spacer(),
                 ListTile(
