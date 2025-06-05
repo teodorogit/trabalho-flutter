@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:uniclass/View/Pages/app_homepage.dart';
 import 'package:uniclass/View/Pages/home.dart';
 import 'package:uniclass/View/Pages/Ensalamento.dart';
 import 'package:uniclass/View/Pages/Turmas.dart';
@@ -31,8 +30,8 @@ class AppWidget extends StatelessWidget {
       title: 'Uniclass',
       initialRoute: '/login_page',
       routes: {
-        '/login_page': (context) => LoginScreen(),
-        '/': (context) => const HomePage(),
+        '/': (context) => LoginScreen(),
+        '/home': (context) => const HomePage(),
         '/Ensalamento': (context) => const EnsalamentoPage(),
         '/Salas': (context) => const SalasPage(),
         '/Turmas': (context) => const TurmasPage(),

@@ -12,7 +12,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _validation = ValidationUserWeb();
   bool isAdmin = false;
 
   @override

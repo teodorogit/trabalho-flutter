@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uniclass/View/Constantes/app_colors.dart';
 
 class AppLayout extends StatelessWidget {
@@ -26,7 +27,7 @@ class AppLayout extends StatelessWidget {
                     width: 120,
                   ),
                 ),
-                SidebarItem(label: 'Home', route: '/'),
+                SidebarItem(label: 'Home', route: '/home'),
                 SidebarItem(label: 'Ensalamento', route: '/Ensalamento'),
                 SidebarItem(label: 'Salas', route: '/Salas'),
                 SidebarItem(label: 'Turmas', route: '/Turmas'),
@@ -36,8 +37,9 @@ class AppLayout extends StatelessWidget {
                 ListTile(
                   leading: Icon(Icons.logout, color: Colors.white),
                   title: Text('Sair', style: TextStyle(color: Colors.white)),
-                  onTap: (  ) {
-                    // lógica de logout
+                  onTap: ( ) async {
+                    await Supabase.instance.client.auth.signOut();
+                    Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
                   },
                 ),
               ],
