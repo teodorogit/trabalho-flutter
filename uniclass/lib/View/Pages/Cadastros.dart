@@ -39,6 +39,127 @@ class _CadastrosPageState extends State<CadastrosPage> {
     }
   }
 
+  void showCadastroDialog(BuildContext context) {
+    final nomeController = TextEditingController();
+    final telefoneController = TextEditingController();
+    final emailController = TextEditingController();
+    final senhaController = TextEditingController();
+    final _formKey = GlobalKey<FormState>();
+    bool _obscureText = true;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        final screenWidth = MediaQuery.of(context).size.width;
+
+        return AlertDialog(
+          title: Text('Preecha os dados:'),
+          content: SizedBox(
+            width: screenWidth * 0.5,
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: nomeController,
+                      decoration: InputDecoration(labelText: 'Nome'),
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Informe o nome'
+                          : null,
+                    ),
+                    TextFormField(
+                      controller: telefoneController,
+                      decoration: InputDecoration(labelText: 'Telefone'),
+                      keyboardType: TextInputType.phone,
+                    ),
+                    TextFormField(
+                      controller: emailController,
+                      decoration: InputDecoration(labelText: 'Email'),
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Informe o email'
+                          : null,
+                    ),
+                    TextFormField(
+                      controller: senhaController,
+                      decoration: InputDecoration(
+                        labelText: 'Senha',
+                        suffixIcon: IconButton(
+                          icon: Icon(_obscureText
+                              ? Icons.visibility
+                              : Icons.visibility_off),
+                          onPressed: () {
+                            _obscureText = !_obscureText;
+                            (context as Element).markNeedsBuild();
+                          },
+                        ),
+                      ),
+                      obscureText: _obscureText,
+                      validator: (value) => value == null || value.isEmpty
+                          ? 'Informe a senha'
+                          : null,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  try {
+                    // 1. Cria o usuário no auth.users
+                    final authResponse = await supabase.auth.signUp(
+                      email: emailController.text,
+                      password: senhaController.text,
+                    );
+
+                    final user = authResponse.user;
+
+                    if (user != null) {
+                      // 2. Insere na tabela webUser com o user_id
+                      await supabase.from('webUser').insert({
+                        'user_id': user.id,
+                        'name': nomeController.text,
+                        'email': emailController.text,
+                        'phone': telefoneController.text,
+                        'isAdm': false,
+                      });
+
+                      Navigator.pop(context);
+                      fetchUsuarios();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                            content:
+                                Text('Funcionário adicionado com sucesso')),
+                      );
+                    } else {
+                      throw Exception('Erro ao criar usuário no auth.');
+                    }
+                  } catch (e) {
+                    print('Erro ao cadastrar: $e');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Erro ao salvar dados: $e')),
+                    );
+                  }
+                }
+              },
+              child: Text('Salvar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppLayout(
@@ -47,13 +168,12 @@ class _CadastrosPageState extends State<CadastrosPage> {
           ? Center(child: CircularProgressIndicator())
           : Column(
               children: [
-                // Botão centralizado com padding mais justo
                 Padding(
                   padding: EdgeInsets.symmetric(vertical: 35, horizontal: 0),
                   child: Center(
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        Navigator.pushNamed(context, '/adicionar_funcionario');
+                        showCadastroDialog(context);
                       },
                       icon: Icon(Icons.add),
                       label: Text('Adicionar Funcionário'),

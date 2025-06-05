@@ -115,7 +115,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             } else if (userTypeAdm == false) {
                               final userType = await ValidationUserWeb()
                                   .validate(email, password, isAdmin);
-
+                                  print('Login usuario padrão: ${userTypeAdm}');
                               if (userType == true) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(

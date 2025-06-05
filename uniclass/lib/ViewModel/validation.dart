@@ -5,7 +5,7 @@ class ValidationUserWeb {
   //admsecretaria@unicv.com  unicvsecretaria!@#
   Future<bool?> validateUserWeb(
       String email, String password, bool isAdmin) async {
-    print('valor parametro is adm: ${isAdmin}');
+    print('validateUserWeb: valor parametro is adm: ${isAdmin}');
     try {
       final response = await supabase.auth.signInWithPassword(
         email: email,
@@ -14,10 +14,12 @@ class ValidationUserWeb {
 
       final user = response.user;
 
+      print('validateUserWeb: valor parametro is adm: ${user}');
+      
       if (user != null && user.id.isNotEmpty) {
         if (user.email != email) {
           print(
-              'Email digitado não corresponde exatamente ao email cadastrado.');
+              'Email digitado não corresponde ao email cadastrado.');
           return null;
         }
       }
@@ -27,7 +29,11 @@ class ValidationUserWeb {
             .from('webUser')
             .select('isAdm')
             .eq('user_id', user.id)
+            .ilike('email', email)
             .maybeSingle();
+
+          print('validateUserWeb:Usuário padrão: ${user}');
+          print(' validateUserWeb: profile: ${profileResponse}');
 
         if (profileResponse == null) {
           print('Usuário não encontrado na tabela webUser.');
@@ -54,7 +60,7 @@ class ValidationUserWeb {
   }
 
   Future<bool?> validate(String email, String password, bool isAdmin) async {
-    print('valor parametro is adm: ${isAdmin}');
+    print('validate: valor parametro is adm: ${isAdmin}');
     try {
       final response = await supabase.auth.signInWithPassword(
         email: email,
@@ -62,11 +68,11 @@ class ValidationUserWeb {
       );
 
       final user = response.user;
-
+      print('validate: padrão: ${user}');
       if (user != null && user.id.isNotEmpty) {
         if (user.email != email) {
           print(
-              'Email digitado não corresponde exatamente ao email cadastrado.');
+              'Email digitado não corresponde ao email cadastrado.');
           return null;
         }
       }
@@ -76,6 +82,7 @@ class ValidationUserWeb {
             .from('webUser')
             .select('isAdm')
             .eq('user_id', user.id)
+            .ilike('email', email)
             .maybeSingle();
 
         if (profileResponse == null) {

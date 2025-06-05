@@ -5,8 +5,9 @@ import 'package:uniclass/View/Pages/Turmas.dart';
 import 'package:uniclass/View/Pages/Salas.dart';
 import 'package:uniclass/View/Pages/Cursos.dart';
 import 'package:uniclass/View/Pages/Cadastros.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uniclass/View/login_page/login_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

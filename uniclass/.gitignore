@@ -1,1 +1,22 @@
+# Dart & Flutter
 .dart_tool/
+.packages
+.pub/
+build/
+*.dill
+*.track.dill
+*.log
+
+# Chrome device cache
+.dart_tool/chrome-device/
+
+# VSCode
+.vscode/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos de ambiente
+.env
+.env.*
