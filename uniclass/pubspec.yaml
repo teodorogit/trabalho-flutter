@@ -11,7 +11,12 @@ dependencies:
     flutter:
         sdk: flutter
     google_sign_in: ^6.3.0
+    provider: ^6.1.5
     supabase_flutter: ^2.8.4
+    screenshot: ^3.0.0
+    path_provider:
+    share_plus:
+    whatsapp_share2:
 
 dev_dependencies:
     flutter_test:
@@ -21,5 +26,9 @@ dev_dependencies:
 flutter:
     uses-material-design: true
     assets:
-    - assets/images/logoUnicv-removebg-preview.png
-    - assets/images/Representacao-removebg-preview.png
+        - assets/images/logoUnicv-removebg-preview.png
+        - assets/images/Representacao-removebg-preview.png
+        - assets/images/logo_uniclass_mobile.png
+        - assets/images/fake_user_flutter.png
+        - assets/images/moon_flutter.png
+        - assets/images/fundo_celular.png

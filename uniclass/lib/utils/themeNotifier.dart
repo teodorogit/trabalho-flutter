@@ -11,6 +11,7 @@ class ThemeNotifier extends ChangeNotifier {
 
   Future<void> changeTheme() async {
     _isDark = !_isDark;
+    
     _currentTheme = _isDark ? darkMode : lightMode;
     notifyListeners();
   }
