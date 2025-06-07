@@ -10,20 +10,35 @@ import 'package:share_plus/share_plus.dart';
 import 'package:flutter/foundation.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   String? nomeUsuario;
-  String? selectedCurso;
+  String? nomeCurso; // Para exibição
+  int? cursoId; // Para consultas
   final ScreenshotController _screenshotController = ScreenshotController();
+  List<Map<String, dynamic>> primeirosHorarios = [];
 
   @override
   void initState() {
     super.initState();
-    buscarNomeUsuario();
-    buscarCursoSelecionado();
+    inicializarDados();
+  }
+
+  Future<void> inicializarDados() async {
+    await buscarNomeUsuario();
+    await buscarCursoSelecionado();
+
+    if (cursoId != null) {
+      final horarios = await buscarPrimeirosHorarios(cursoId!);
+      setState(() {
+        primeirosHorarios = horarios;
+      });
+    }
   }
 
   Future<void> buscarCursoSelecionado() async {
@@ -34,15 +49,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final response = await Supabase.instance.client
         .from('mobileUser')
-        .select('curso')
+        .select('curso_id, curso')
         .eq('id', userId)
         .single();
 
     setState(() {
-      selectedCurso = response['curso'] ?? 'Curso não encontrado';
+      cursoId = response['curso_id'];
+      nomeCurso = response['curso'];
     });
 
-    print('Curso selecionado: $selectedCurso');
+    print('Curso selecionado (ID): $cursoId');
+  }
+
+  Future<List<Map<String, dynamic>>> buscarPrimeirosHorarios(
+      int cursoId) async {
+    final response = await Supabase.instance.client
+        .from('disciplinas')
+        .select(
+            'nome_disciplina, sala, dia_semana, horario_inicio, horario_fim')
+        .eq('curso_id', cursoId)
+        .order('dia_semana', ascending: true)
+        .order('horario_inicio', ascending: true)
+        .limit(2);
+
+    return List<Map<String, dynamic>>.from(response);
   }
 
   Future<void> buscarNomeUsuario() async {
@@ -157,27 +187,29 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     SizedBox(height: 40),
                     Container(
-                      child: selectedCurso == null
-                          ? const CircularProgressIndicator()
-                          : Text(
-                              'Curso: $selectedCurso',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                      width: MediaQuery.of(context).size.width * 0.75,
-                      padding:
-                          EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Theme.of(context).brightness == Brightness.dark
-                              ? Colors.white
-                              : Colors.black54,
+                        width: MediaQuery.of(context).size.width * 0.75,
+                        padding:
+                            EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color:
+                                Theme.of(context).brightness == Brightness.dark
+                                    ? Colors.white
+                                    : Colors.black54,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
+                        child: nomeCurso == null
+                            ? const CircularProgressIndicator()
+                            : Center(
+                                child: Text(
+                                  nomeCurso!,
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              )),
                     SizedBox(height: 20),
                     Screenshot(
                       controller: _screenshotController,
@@ -203,19 +235,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Text('Primeiro horário',
                                     style: TextStyle(fontSize: 16)),
                                 SizedBox(height: 10),
-                                Divider(
-                                  thickness: 1,
-                                  color: Theme.of(context).brightness ==
-                                          Brightness.dark
-                                      ? Colors.white
-                                      : Colors.black54,
-                                ),
+                                Divider(thickness: 1),
                                 SizedBox(height: 10),
                                 Text(
-                                  'LAB 01 -\nFlutter Avançado',
+                                  primeirosHorarios.isNotEmpty
+                                      ? '${primeirosHorarios[0]['sala']} -\n${primeirosHorarios[0]['nome_disciplina']}'
+                                      : 'Nenhum horário encontrado',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(fontSize: 16),
-                                )
+                                ),
                               ],
                             ),
                           ),
@@ -236,8 +264,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Text('Segundo horário',
-                                    style: TextStyle(fontSize: 16)),
+                                Text(
+                                  primeirosHorarios.length > 1
+                                      ? '${primeirosHorarios[1]['sala']} -\n${primeirosHorarios[1]['nome_disciplina']}'
+                                      : 'Nenhum segundo horário encontrado',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 16),
+                                ),
                                 SizedBox(height: 10),
                                 Divider(
                                   thickness: 1,
@@ -246,12 +279,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ? Colors.white
                                       : Colors.black54,
                                 ),
-                                SizedBox(height: 10),
-                                Text(
-                                  'LAB 01 -\nFlutter Avançado',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 16),
-                                )
                               ],
                             ),
                           ),
