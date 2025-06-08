@@ -29,12 +29,12 @@ class AppWidget extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Uniclass',
-      initialRoute: '/login_page',
+      initialRoute: '/',
       routes: {
         '/': (context) => LoginScreen(),
         '/home': (context) => const HomePage(),
         '/Ensalamento': (context) => const EnsalamentoPage(),
-        '/Salas': (context) => const SalasPage(),
+        '/Salas': (context) => const SalasPage(), // Make sure SalasPage is defined in lib/View/Pages/Salas.dart as 'class SalasPage extends StatelessWidget'
         '/Turmas': (context) => const TurmasPage(),
         '/Cursos': (context) => const CursosPage(),
         '/Perfil': (context) => const CadastrosPage(),

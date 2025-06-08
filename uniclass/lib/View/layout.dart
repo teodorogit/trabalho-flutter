@@ -5,8 +5,14 @@ import 'package:uniclass/View/Constantes/app_colors.dart';
 class AppLayout extends StatelessWidget {
   final String title;
   final Widget child;
+  final Widget? floatingActionButton;
 
-  const AppLayout({super.key, required this.title, required this.child});
+  const AppLayout({
+    super.key,
+    required this.title,
+    required this.child,
+    this.floatingActionButton,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +24,7 @@ class AppLayout extends StatelessWidget {
           Container(
             width: 200,
             color: AppColors.highlightOrange,
-             child: Column(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 DrawerHeader(
@@ -37,7 +43,7 @@ class AppLayout extends StatelessWidget {
                 ListTile(
                   leading: Icon(Icons.logout, color: Colors.white),
                   title: Text('Sair', style: TextStyle(color: Colors.white)),
-                  onTap: ( ) async {
+                  onTap: () async {
                     await Supabase.instance.client.auth.signOut();
                     Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
                   },
@@ -58,7 +64,19 @@ class AppLayout extends StatelessWidget {
                     style: TextStyle(fontSize: 24, color: Colors.white),
                   ),
                 ),
-                Expanded(child: child),
+                Expanded(
+                  child: Stack(
+                    children: [
+                      child,
+                      if (floatingActionButton != null)
+                        Positioned(
+                          bottom: 24,
+                          right: 24,
+                          child: floatingActionButton!,
+                        ),
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
