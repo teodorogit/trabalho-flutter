@@ -20,7 +20,7 @@ class CustomTextField extends StatelessWidget {
       obscureText: obscureText,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: Colors.green[700]),
+        labelStyle: TextStyle(color: const Color.fromARGB(255, 56, 142, 60)),
         filled: true,
         fillColor: Color(0x4278DA49), 
         enabledBorder: OutlineInputBorder(

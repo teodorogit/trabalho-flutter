@@ -1,15 +1,14 @@
-<<<<<<< Updated upstream
-2025/06/05-19:39:21.274 142c Reusing MANIFEST C:\Users\USURIO~2\AppData\Local\Temp\flutter_tools.4ab38212\flutter_tools_chrome_device.6ec39dc6\Default\Local Storage\leveldb/MANIFEST-000001
-2025/06/05-19:39:21.286 142c Recovering log #3
-2025/06/05-19:39:21.290 142c Reusing old log C:\Users\USURIO~2\AppData\Local\Temp\flutter_tools.4ab38212\flutter_tools_chrome_device.6ec39dc6\Default\Local Storage\leveldb/000003.log 
-=======
-2025/06/03-20:55:09.780 22ec Reusing MANIFEST C:\Users\Dyames\AppData\Local\Temp\flutter_tools.1206fd21\flutter_tools_chrome_device.437b6e40\Default\Local Storage\leveldb/MANIFEST-000001
-2025/06/03-20:55:09.789 22ec Recovering log #8
-2025/06/03-20:55:09.793 22ec Reusing old log C:\Users\Dyames\AppData\Local\Temp\flutter_tools.1206fd21\flutter_tools_chrome_device.437b6e40\Default\Local Storage\leveldb/000008.log 
-2025/06/03-20:55:09.794 22ec Delete type=0 #3
-2025/06/03-20:55:09.795 22ec Delete type=0 #4
-2025/06/03-20:55:09.795 22ec Delete type=2 #7
-2025/06/03-20:55:09.795 22ec Delete type=0 #7
-2025/06/03-20:55:09.795 22ec Delete type=2 #8
-2025/06/03-20:55:09.795 22ec Delete type=2 #9
->>>>>>> Stashed changes
+2025/06/07-19:26:50.317 7b8 Reusing MANIFEST C:\Users\Dyames\AppData\Local\Temp\flutter_tools.85da88a\flutter_tools_chrome_device.af81d9ba\Default\Local Storage\leveldb/MANIFEST-000001
+2025/06/07-19:26:50.323 7b8 Recovering log #13
+2025/06/07-19:26:50.325 7b8 Reusing old log C:\Users\Dyames\AppData\Local\Temp\flutter_tools.85da88a\flutter_tools_chrome_device.af81d9ba\Default\Local Storage\leveldb/000013.log 
+2025/06/07-19:26:50.326 7b8 Delete type=2 #3
+2025/06/07-19:26:50.326 7b8 Delete type=0 #3
+2025/06/07-19:26:50.326 7b8 Delete type=2 #4
+2025/06/07-19:26:50.327 7b8 Delete type=0 #4
+2025/06/07-19:26:50.327 7b8 Delete type=2 #5
+2025/06/07-19:26:50.327 7b8 Delete type=2 #7
+2025/06/07-19:26:50.327 7b8 Delete type=0 #7
+2025/06/07-19:26:50.327 7b8 Delete type=2 #8
+2025/06/07-19:26:50.327 7b8 Delete type=0 #8
+2025/06/07-19:26:50.327 7b8 Delete type=2 #9
+2025/06/07-19:26:50.327 7b8 Delete type=0 #9

@@ -39,13 +39,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: MediaQuery.of(context).size.height * 0.0001),
                   SizedBox(
                     width: size.width * 2,
-                    height: size.height * 0.34,
+                    height: size.height * 0.40,
                     child: Image.asset(
                       'assets/images/uniclass.jpeg',
                       fit: BoxFit.contain,
                     ),
                   ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.07),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.05),
                   Center(
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width * 0.6,
@@ -97,14 +97,14 @@ class _LoginScreenState extends State<LoginScreen> {
                             final email = _usernameController.text;
                             final password = _passwordController.text;
 
-                            final userTypeAdm = await ValidationUserWeb()
-                                .validateUserWeb(email, password, isAdmin);
+                            final user = await ValidationUserWeb()
+                                .validateUserWeb(email, password);
 
-                            if (userTypeAdm == true) {
+                            if (user== true) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
-                                      'Login de administrador realizado com sucesso!'),
+                                      'Login realizado com sucesso!'),
                                 ),
                               );
                               Navigator.pushReplacement(
@@ -112,39 +112,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                 MaterialPageRoute(
                                     builder: (context) => const HomePage()),
                               );
-                            } else if (userTypeAdm == false) {
-                              final userType = await ValidationUserWeb()
-                                  .validate(email, password, isAdmin);
-                                  print('Login usuario padrão: ${userTypeAdm}');
-                              if (userType == true) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content:
-                                        Text('Login realizado com sucesso!'),
-                                  ),
-                                );
-                                Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => LoginScreen()),//copiar tela para usuário padrão
-                                );
-                              } else {
-                                if (isAdmin) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                          'O e-mail informado  não é do adimistrador. Desmarque a flag "Acessar como Administrador"'),
-                                    ),
-                                  );
-                                  return;
-                                }
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                        'O e-mail informado é do administrador. Marque a flag "Acessar como Administrador"'),
-                                  ),
-                                );
-                              }
                             } else {                             
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
@@ -159,26 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 32),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Acessar como administrador",
-                        style: const TextStyle(color: Colors.black),
-                      ),
-                      Switch(
-                        activeColor: const Color.fromARGB(255, 239, 155, 52),
-                        value: isAdmin,
-                        onChanged: (bool value) {
-                          setState(() {
-                            isAdmin = value;
-                            print('O valor da flag: ${isAdmin}');
-                          });
-                        },
-                      ),
-                    ],
-                  ),
+                  const SizedBox(height: 50),
                   Column(
                     children: [
                       SizedBox(
@@ -189,7 +137,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       const Text('v1.0', style: TextStyle(fontSize: 15)),
                     ],
                   ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.035),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.030),
                   Container(
                     width: MediaQuery.of(context).size.width,
                     child: const Divider(
@@ -200,8 +148,8 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.0001),
                   SizedBox(
-                    width: size.width * 0.60,
-                    height: size.height * 0.13,
+                    width: size.width * 0.70,
+                    height: size.height * 0.15,
                     child: Image.asset(
                       'assets/images/logoUnicv-removebg-preview.png',
                       fit: BoxFit.contain,

@@ -32,7 +32,7 @@ class AppLayout extends StatelessWidget {
                 SidebarItem(label: 'Salas', route: '/Salas'),
                 SidebarItem(label: 'Turmas', route: '/Turmas'),
                 SidebarItem(label: 'Cursos', route: '/Cursos'),
-                SidebarItem(label: 'Cadastros', route: '/Cadastros'),
+                SidebarItem(label: 'Perfil', route: '/Perfil'),
                 Spacer(),
                 ListTile(
                   leading: Icon(Icons.logout, color: Colors.white),

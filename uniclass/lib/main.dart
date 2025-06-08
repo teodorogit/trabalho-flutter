@@ -37,7 +37,7 @@ class AppWidget extends StatelessWidget {
         '/Salas': (context) => const SalasPage(),
         '/Turmas': (context) => const TurmasPage(),
         '/Cursos': (context) => const CursosPage(),
-        '/Cadastros': (context) => const CadastrosPage(),
+        '/Perfil': (context) => const CadastrosPage(),
       },
     );
   }

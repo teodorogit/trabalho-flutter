@@ -13,33 +13,208 @@ class _CadastrosPageState extends State<CadastrosPage> {
   final SupabaseClient supabase = Supabase.instance.client;
   List<dynamic> usuarios = [];
   bool isLoading = true;
+  bool hasAccess = false;
+  bool isAdm = false;
+  String? userId;
+  final TextEditingController buscaController = TextEditingController();
+  String termoBusca = '';
 
   @override
   void initState() {
     super.initState();
-    fetchUsuarios();
+    checkAccess();
+  }
+
+  Future<void> checkAccess() async {
+    final user = supabase.auth.currentUser;
+    if (user != null) {
+      final data = await supabase
+          .from('webUser')
+          .select('isAdm')
+          .eq('user_id', user.id)
+          .maybeSingle();
+
+      if (data == null) {
+        setState(() {
+          hasAccess = false;
+          isLoading = false;
+        });
+        return;
+      }
+
+      final adm = data['isAdm'] as bool? ?? false;
+
+      setState(() {
+        hasAccess = true;
+        isAdm = adm;
+        userId = user.id;
+      });
+
+      fetchUsuarios();
+    } else {
+      setState(() {
+        hasAccess = false;
+        isLoading = false;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pop(context);
+      });
+    }
   }
 
   Future<void> fetchUsuarios() async {
+    setState(() {
+      isLoading = true;
+    });
+
     try {
-      final data = await supabase
-          .from('webUser')
-          .select('id, name, email, isAdm')
-          .order('name', ascending: true);
+      var query = supabase.from('webUser').select('*');
+
+      if (!isAdm && userId != null) {
+        final safeUserId = userId!;
+        query = query.eq('user_id', safeUserId);
+      }
+
+      final response = await query;
 
       setState(() {
-        usuarios = data as List<dynamic>;
+        usuarios = response;
         isLoading = false;
       });
-    } catch (error) {
-      print('Erro ao buscar usuários: $error');
+    } catch (e) {
+      print('Erro ao buscar usuários: $e');
       setState(() {
         isLoading = false;
       });
     }
   }
 
-  void showCadastroDialog(BuildContext context) {
+  void showEditUserDialog(BuildContext context, dynamic user) {
+    final nomeController = TextEditingController(text: user['name']);
+    final emailController = TextEditingController(text: user['email']);
+    final telefoneController = TextEditingController(text: user['phone'] ?? '');
+    final senhaController = TextEditingController();
+    final _formKey = GlobalKey<FormState>();
+    bool _obscureText = true;
+
+    final bool isCurrentUser = userId == user['user_id'];
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        final screenWidth = MediaQuery.of(context).size.width;
+
+        return AlertDialog(
+          title: Text('Editar perfil'),
+          content: SizedBox(
+            width: screenWidth * 0.5,
+            child: Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: nomeController,
+                      decoration: InputDecoration(labelText: 'Nome'),
+                    ),
+                    TextFormField(
+                      controller: emailController,
+                      decoration: InputDecoration(labelText: 'Email'),
+                    ),
+                    TextFormField(
+                      controller: telefoneController,
+                      decoration: InputDecoration(labelText: 'Telefone'),
+                      keyboardType: TextInputType.phone,
+                    ),
+                    TextFormField(
+                      controller: senhaController,
+                      decoration: InputDecoration(
+                        labelText: 'Nova Senha',
+                        hintText: 'Senha de no mínimo 6 dígitos',
+                        suffixIcon: isCurrentUser
+                            ? IconButton(
+                                icon: Icon(_obscureText
+                                    ? Icons.visibility
+                                    : Icons.visibility_off),
+                                onPressed: () {
+                                  _obscureText = !_obscureText;
+                                  (context as Element).markNeedsBuild();
+                                },
+                              )
+                            : null,
+                      ),
+                      obscureText: _obscureText,
+                      enabled: isCurrentUser,
+                      validator: (value) {
+                        if (!isCurrentUser && (value?.isNotEmpty ?? false)) {
+                          return 'Você não pode alterar a senha deste usuário.';
+                        }
+                        if (isCurrentUser &&
+                            value != null &&
+                            value.isNotEmpty &&
+                            value.length < 6) {
+                          return 'Senha deve ter no mínimo 6 dígitos.';
+                        }
+                        return null;
+                      },
+                    ),
+                    if (!isCurrentUser)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 8),
+                        child: Text(
+                          'Só é possível alterar a senha do usuário que está logado.',
+                          style: TextStyle(color: Colors.grey, fontSize: 12),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancelar'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                if (_formKey.currentState!.validate()) {
+                  try {
+                    await supabase.from('webUser').update({
+                      'name': nomeController.text,
+                      'email': emailController.text,
+                      'phone': telefoneController.text,
+                    }).eq('id', user['id']);
+
+                    if (isCurrentUser && senhaController.text.isNotEmpty) {
+                      await supabase.auth.updateUser(
+                        UserAttributes(password: senhaController.text),
+                      );
+                    }
+
+                    Navigator.pop(context);
+                    fetchUsuarios();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Perfil atualizado!')),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Erro ao atualizar: $e')),
+                    );
+                  }
+                }
+              },
+              child: Text('Salvar'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showAddDialog(BuildContext context) {
     final nomeController = TextEditingController();
     final telefoneController = TextEditingController();
     final emailController = TextEditingController();
@@ -51,7 +226,7 @@ class _CadastrosPageState extends State<CadastrosPage> {
       context: context,
       barrierDismissible: false,
       builder: (context) {
-        final screenWidth = MediaQuery.of(context).size.width;
+      final screenWidth = MediaQuery.of(context).size.width;
 
         return AlertDialog(
           title: Text('Preecha os dados:'),
@@ -72,12 +247,18 @@ class _CadastrosPageState extends State<CadastrosPage> {
                     ),
                     TextFormField(
                       controller: telefoneController,
-                      decoration: InputDecoration(labelText: 'Telefone'),
+                      decoration: InputDecoration(
+                        labelText: 'Telefone',
+                        hintText: 'Ex: DDD+9+12345678',
+                      ),
                       keyboardType: TextInputType.phone,
                     ),
                     TextFormField(
                       controller: emailController,
-                      decoration: InputDecoration(labelText: 'Email'),
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        hintText: 'teste!!*@gmail.com',
+                      ),
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) => value == null || value.isEmpty
                           ? 'Informe o email'
@@ -87,6 +268,7 @@ class _CadastrosPageState extends State<CadastrosPage> {
                       controller: senhaController,
                       decoration: InputDecoration(
                         labelText: 'Senha',
+                        hintText: 'Senha de no mínimo 6 dígitos',
                         suffixIcon: IconButton(
                           icon: Icon(_obscureText
                               ? Icons.visibility
@@ -116,7 +298,6 @@ class _CadastrosPageState extends State<CadastrosPage> {
               onPressed: () async {
                 if (_formKey.currentState!.validate()) {
                   try {
-                    // 1. Cria o usuário no auth.users
                     final authResponse = await supabase.auth.signUp(
                       email: emailController.text,
                       password: senhaController.text,
@@ -125,7 +306,6 @@ class _CadastrosPageState extends State<CadastrosPage> {
                     final user = authResponse.user;
 
                     if (user != null) {
-                      // 2. Insere na tabela webUser com o user_id
                       await supabase.from('webUser').insert({
                         'user_id': user.id,
                         'name': nomeController.text,
@@ -139,7 +319,7 @@ class _CadastrosPageState extends State<CadastrosPage> {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                             content:
-                                Text('Funcionário adicionado com sucesso')),
+                                Text('Perfil adicionado com sucesso')),
                       );
                     } else {
                       throw Exception('Erro ao criar usuário no auth.');
@@ -163,49 +343,164 @@ class _CadastrosPageState extends State<CadastrosPage> {
   @override
   Widget build(BuildContext context) {
     return AppLayout(
-      title: 'Cadastros de Funcionários',
+      title: 'Gerenciamento de perfil',
       child: isLoading
           ? Center(child: CircularProgressIndicator())
           : Column(
               children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(vertical: 35, horizontal: 0),
-                  child: Center(
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        showCadastroDialog(context);
-                      },
-                      icon: Icon(Icons.add),
-                      label: Text('Adicionar Funcionário'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                      ),
+                SizedBox(height: 50),
+                if (isAdm)
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(16, 0, 16, 50),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 3,
+                          child: TextField(
+                            controller: buscaController,
+                            decoration: InputDecoration(
+                              hintText: 'Buscar por nome ou email...',
+                              prefixIcon: Icon(Icons.search),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onChanged: (value) {
+                              setState(() {
+                                termoBusca = value.toLowerCase();
+                              });
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            showAddDialog(context);
+                          },
+                          icon: Icon(Icons.add),
+                          label: Text('Adicionar perfil'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green[700],
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 18),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ),
                 Expanded(
                   child: ListView.builder(
-                    padding: EdgeInsets.symmetric(vertical: 0, horizontal: 16),
+                    padding: EdgeInsets.symmetric(horizontal: 16),
                     itemCount: usuarios.length,
                     itemBuilder: (context, index) {
                       final user = usuarios[index];
+
+                      if (termoBusca.isNotEmpty &&
+                          !(user['name'] ?? '')
+                              .toLowerCase()
+                              .contains(termoBusca) &&
+                          !(user['email'] ?? '')
+                              .toLowerCase()
+                              .contains(termoBusca)) {
+                        return SizedBox.shrink();
+                      }
+
                       return Card(
+                        color: Color.fromARGB(255, 238, 239, 237),
                         margin: EdgeInsets.symmetric(vertical: 8),
-                        child: ListTile(
-                          title: Text(user['name'] ?? 'Sem nome'),
-                          subtitle: Text(user['email'] ?? 'Sem email'),
-                          trailing: IconButton(
-                            icon: Icon(Icons.edit, color: Colors.blue),
-                            onPressed: () {
-                              Navigator.pushNamed(
-                                context,
-                                '/editar_funcionario',
-                                arguments: user['id'],
-                              );
-                            },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 12, horizontal: 16),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  user['name'] ?? 'Sem nome',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 3,
+                                child: Text(
+                                  user['email'] ?? 'Sem email',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 2,
+                                child: Text(
+                                  user['phone'] ?? 'Sem telefone',
+                                  style: TextStyle(color: Colors.black),
+                                ),
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.edit,
+                                        color: Colors.green[700]),
+                                    onPressed: () {
+                                      showEditUserDialog(context, user);
+                                    },
+                                  ),
+                                  if (isAdm)
+                                    IconButton(
+                                      icon:
+                                          Icon(Icons.delete, color: Colors.red),
+                                      onPressed: () async {
+                                        final confirm = await showDialog<bool>(
+                                          context: context,
+                                          builder: (context) => AlertDialog(
+                                            title: Text('Confirmar exclusão'),
+                                            content: Text(
+                                                'Deseja realmente remover este perfil?'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(
+                                                    context, false),
+                                                child: Text('Cancelar'),
+                                              ),
+                                              TextButton(
+                                                onPressed: () => Navigator.pop(
+                                                    context, true),
+                                                child: Text('Excluir'),
+                                              ),
+                                            ],
+                                          ),
+                                        );
+
+                                        if (confirm == true) {
+                                          try {
+                                            await supabase
+                                                .from('webUser')
+                                                .delete()
+                                                .eq('id', user['id']);
+                                            fetchUsuarios();
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                    'Perfil removido com sucesso'),
+                                              ),
+                                            );
+                                          } catch (e) {
+                                            print('Erro ao excluir: $e');
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                    'Erro ao remover perfil: $e'),
+                                              ),
+                                            );
+                                          }
+                                        }
+                                      },
+                                    ),
+                                ],
+                              ),
+                            ],
                           ),
                         ),
                       );

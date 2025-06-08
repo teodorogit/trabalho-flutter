@@ -1,15 +1,14 @@
-<<<<<<< Updated upstream
-2025/06/05-19:47:53.804 828 Reusing MANIFEST C:\Users\USURIO~2\AppData\Local\Temp\flutter_tools.9e84d60a\flutter_tools_chrome_device.449a164a\Default\Local Storage\leveldb/MANIFEST-000001
-2025/06/05-19:47:53.813 828 Recovering log #3
-2025/06/05-19:47:53.817 828 Reusing old log C:\Users\USURIO~2\AppData\Local\Temp\flutter_tools.9e84d60a\flutter_tools_chrome_device.449a164a\Default\Local Storage\leveldb/000003.log 
-=======
-2025/06/03-22:04:50.747 2608 Reusing MANIFEST C:\Users\Dyames\AppData\Local\Temp\flutter_tools.dc57fd73\flutter_tools_chrome_device.bd6314f\Default\Local Storage\leveldb/MANIFEST-000001
-2025/06/03-22:04:50.755 2608 Recovering log #8
-2025/06/03-22:04:50.759 2608 Reusing old log C:\Users\Dyames\AppData\Local\Temp\flutter_tools.dc57fd73\flutter_tools_chrome_device.bd6314f\Default\Local Storage\leveldb/000008.log 
-2025/06/03-22:04:50.760 2608 Delete type=0 #3
-2025/06/03-22:04:50.760 2608 Delete type=0 #4
-2025/06/03-22:04:50.760 2608 Delete type=2 #7
-2025/06/03-22:04:50.760 2608 Delete type=0 #7
-2025/06/03-22:04:50.761 2608 Delete type=2 #8
-2025/06/03-22:04:50.761 2608 Delete type=2 #9
->>>>>>> Stashed changes
+2025/06/07-20:52:35.967 15f8 Reusing MANIFEST C:\Users\Dyames\AppData\Local\Temp\flutter_tools.34d2877f\flutter_tools_chrome_device.f854ba48\Default\Local Storage\leveldb/MANIFEST-000001
+2025/06/07-20:52:35.975 15f8 Recovering log #13
+2025/06/07-20:52:35.977 15f8 Reusing old log C:\Users\Dyames\AppData\Local\Temp\flutter_tools.34d2877f\flutter_tools_chrome_device.f854ba48\Default\Local Storage\leveldb/000013.log 
+2025/06/07-20:52:35.979 15f8 Delete type=2 #3
+2025/06/07-20:52:35.979 15f8 Delete type=0 #3
+2025/06/07-20:52:35.979 15f8 Delete type=2 #4
+2025/06/07-20:52:35.979 15f8 Delete type=0 #4
+2025/06/07-20:52:35.979 15f8 Delete type=2 #5
+2025/06/07-20:52:35.979 15f8 Delete type=2 #7
+2025/06/07-20:52:35.979 15f8 Delete type=0 #7
+2025/06/07-20:52:35.979 15f8 Delete type=2 #8
+2025/06/07-20:52:35.980 15f8 Delete type=0 #8
+2025/06/07-20:52:35.980 15f8 Delete type=2 #9
+2025/06/07-20:52:35.980 15f8 Delete type=0 #9
