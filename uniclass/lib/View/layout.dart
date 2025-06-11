@@ -29,7 +29,7 @@ class AppLayout extends StatelessWidget {
               children: [
                 DrawerHeader(
                   child: Image.asset(
-                    'assets/images/uniclass.jpeg',
+                    'assets/images/uniclass-removebg-preview.png',
                     width: 120,
                   ),
                 ),

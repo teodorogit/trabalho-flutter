@@ -345,7 +345,7 @@ class _SalasPageState extends State<SalasPage> {
                             final sala = salasFiltradas[index];
                             return Card(
                               margin: const EdgeInsets.symmetric(vertical: 8),
-                              color: const Color(0xFFF8F3FA),
+                              color: const Color.fromARGB(255, 238, 239, 237),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                                 child: Row(
