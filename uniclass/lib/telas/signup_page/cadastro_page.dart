@@ -11,13 +11,6 @@ class CadastroPage extends StatefulWidget {
 }
 
 class _CadastroPageState extends State<CadastroPage> {
-  final List<String> cursos = [
-    'Ciência da Computação',
-    'Engenharia de Software',
-    'Sistemas de Informação',
-    'Análise e Desenvolvimento de Sistemas'
-  ];
-
   final TextEditingController nomeController = TextEditingController();
   final TextEditingController raController = TextEditingController();
   final TextEditingController semestreController = TextEditingController();
@@ -25,7 +18,45 @@ class _CadastroPageState extends State<CadastroPage> {
   final TextEditingController senhaController = TextEditingController();
   final TextEditingController confirmaSenhaController = TextEditingController();
 
+  List<String> cursos = [];
+  bool carregandoCursos = true;
   String? cursoSelecionado;
+
+  @override
+  void initState() {
+    super.initState();
+    buscarCursosDoBanco();
+  }
+
+  Future<void> buscarCursosDoBanco() async {
+    final supabase = Supabase.instance.client;
+    try {
+      final response =
+          await supabase.from('cursos').select('name').order('name');
+
+      // Remove duplicatas e limpa espaços
+      final List<String> nomesCursos = response
+          .map<String>((curso) => curso['name'].toString().trim())
+          .toSet() // Remove duplicados
+          .toList();
+
+      setState(() {
+        cursos = nomesCursos;
+        // Garante que o cursoSelecionado ainda existe após atualizar a lista
+        if (!cursos.contains(cursoSelecionado)) {
+          cursoSelecionado = null;
+        }
+        carregandoCursos = false;
+      });
+    } catch (e) {
+      setState(() {
+        carregandoCursos = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao carregar cursos: $e')),
+      );
+    }
+  }
 
   Future<bool> cadastrarUsuario() async {
     final supabase = Supabase.instance.client;
@@ -38,7 +69,6 @@ class _CadastroPageState extends State<CadastroPage> {
     }
 
     try {
-      // Criação do usuário sem envio de e-mail de confirmação
       final authResponse = await supabase.auth.signUp(
         email: emailController.text.trim(),
         password: senhaController.text.trim(),
@@ -46,11 +76,9 @@ class _CadastroPageState extends State<CadastroPage> {
 
       final user = authResponse.user;
       if (user == null) {
-        print('❌ Erro: usuário nulo após signup');
         return false;
       }
 
-      // Inserção dos dados adicionais
       await supabase.from('mobileUser').insert({
         'id': user.id,
         'nome': nomeController.text.trim(),
@@ -60,10 +88,8 @@ class _CadastroPageState extends State<CadastroPage> {
         'email': emailController.text.trim(),
       });
 
-      print('✅ Dados inseridos com sucesso em mobileUser');
       return true;
     } catch (error) {
-      print('❌ Erro no cadastro: $error');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Erro ao cadastrar: $error')),
       );
@@ -81,129 +107,152 @@ class _CadastroPageState extends State<CadastroPage> {
           height: double.infinity,
           child: Padding(
             padding: const EdgeInsets.all(35),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextField(
-                  controller: nomeController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Color(0x8078DA49),
-                    labelText: 'Nome',
-                    border: OutlineInputBorder(),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextField(
+                    controller: nomeController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Color(0x8078DA49),
+                      labelText: 'Nome',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: raController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Color(0x8078DA49),
-                    labelText: 'RA',
-                    border: OutlineInputBorder(),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: raController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Color(0x8078DA49),
+                      labelText: 'RA',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Color(0x8078DA49),
-                    labelText: 'Curso',
-                    border: OutlineInputBorder(),
+                  const SizedBox(height: 10),
+                  carregandoCursos
+                      ? CircularProgressIndicator()
+                      : DropdownButtonFormField<String>(
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Color(0x8078DA49),
+                            labelText: 'Curso',
+                            border: OutlineInputBorder(),
+                          ),
+                          value: cursos.contains(cursoSelecionado)
+                              ? cursoSelecionado
+                              : null,
+                          hint: Text('Selecione um curso'),
+                          onChanged: (String? novoCurso) {
+                            setState(() {
+                              cursoSelecionado = novoCurso;
+                            });
+                          },
+                          items: cursos.map((String curso) {
+                            return DropdownMenuItem<String>(
+                              value: curso,
+                              child: Text(curso),
+                            );
+                          }).toList(),
+                        ),
+                  const SizedBox(height: 10),
+                  TextField(
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    controller: semestreController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Color(0x8078DA49),
+                      labelText: 'Semestre',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                  value: cursoSelecionado,
-                  hint: Text('Selecione um curso'),
-                  onChanged: (String? novoCurso) {
-                    setState(() {
-                      cursoSelecionado = novoCurso;
-                    });
-                  },
-                  items: cursos.map((String curso) {
-                    return DropdownMenuItem<String>(
-                      value: curso,
-                      child: Text(curso),
-                    );
-                  }).toList(),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  controller: semestreController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Color(0x8078DA49),
-                    labelText: 'Semestre',
-                    border: OutlineInputBorder(),
+                  const SizedBox(height: 10),
+                  TextField(
+                    controller: emailController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Color(0x8078DA49),
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: emailController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Color(0x8078DA49),
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
+                  const SizedBox(height: 10),
+                  TextField(
+                    obscureText: true,
+                    controller: senhaController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Color(0x8078DA49),
+                      labelText: 'Senha',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  obscureText: true,
-                  controller: senhaController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Color(0x8078DA49),
-                    labelText: 'Senha',
-                    border: OutlineInputBorder(),
+                  const SizedBox(height: 12),
+                  TextField(
+                    obscureText: true,
+                    controller: confirmaSenhaController,
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: Color(0x8078DA49),
+                      labelText: 'Confirme a senha',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                TextField(
-                  obscureText: true,
-                  controller: confirmaSenhaController,
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Color(0x8078DA49),
-                    labelText: 'Confirme a senha',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        bool sucesso = await cadastrarUsuario();
-                        if (sucesso) {
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green, // Fundo verde
+                          foregroundColor: Colors.white, // Texto branco
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
+                          textStyle: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        onPressed: () async {
+                          bool sucesso = await cadastrarUsuario();
+                          if (sucesso) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => LoginScreen()),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text('Erro ao cadastrar usuário')),
+                            );
+                          }
+                        },
+                        child: Text('Cadastrar'),
+                      ),
+                      const SizedBox(width: 10),
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green, // Fundo verde
+                          foregroundColor: Colors.white, // Texto branco
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
+                          textStyle: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                        onPressed: () {
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => LoginScreen()),
                           );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text('Erro ao cadastrar usuário')),
-                          );
-                        }
-                      },
-                      child: Text('Cadastrar'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => LoginScreen()),
-                        );
-                      },
-                      child: Text('Voltar'),
-                    ),
-                  ],
-                ),
-              ],
+                        },
+                        child: Text('Voltar'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
