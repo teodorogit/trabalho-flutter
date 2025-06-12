@@ -331,7 +331,7 @@ class _TurmasPageState extends State<TurmasPage> {
                         icon: const Icon(Icons.add),
                         label: const Text('Adicionar turma'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.green[700],
+                          backgroundColor: const Color.fromRGBO(56, 142, 60, 1),
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 20,

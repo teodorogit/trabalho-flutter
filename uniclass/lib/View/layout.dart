@@ -16,6 +16,8 @@ class AppLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentRoute = ModalRoute.of(context)?.settings.name;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: Row(
@@ -33,13 +35,13 @@ class AppLayout extends StatelessWidget {
                     width: 120,
                   ),
                 ),
-                SidebarItem(label: 'Home', route: '/home'),
-                SidebarItem(label: 'Ensalamento', route: '/Ensalamento'),
-                SidebarItem(label: 'Salas', route: '/Salas'),
-                SidebarItem(label: 'Turmas', route: '/Turmas'),
-                SidebarItem(label: 'Cursos', route: '/Cursos'),
-                SidebarItem(label: 'Perfil', route: '/Perfil'),
-                Spacer(),
+                SidebarItem(label: 'Dashboard', route: '/Dashboard', currentRoute: currentRoute),
+                SidebarItem(label: 'Ensalamento', route: '/Ensalamento', currentRoute: currentRoute),
+                SidebarItem(label: 'Salas', route: '/Salas', currentRoute: currentRoute),
+                SidebarItem(label: 'Turmas', route: '/Turmas', currentRoute: currentRoute),
+                SidebarItem(label: 'Cursos', route: '/Cursos', currentRoute: currentRoute),
+                SidebarItem(label: 'Perfil', route: '/Perfil', currentRoute: currentRoute),
+                const Spacer(),
                 ListTile(
                   leading: Icon(Icons.logout, color: Colors.white),
                   title: Text('Sair', style: TextStyle(color: Colors.white)),
@@ -89,16 +91,31 @@ class AppLayout extends StatelessWidget {
 class SidebarItem extends StatelessWidget {
   final String label;
   final String route;
+  final String? currentRoute;
 
-  const SidebarItem({super.key, required this.label, required this.route});
+  const SidebarItem({
+    super.key,
+    required this.label,
+    required this.route,
+    required this.currentRoute,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final isSelected = currentRoute == route;
+
     return ListTile(
-      title: Text(label, style: TextStyle(color: Colors.white)),
+      tileColor: isSelected ? Colors.white : null,
+      title: Text(
+        label,
+        style: TextStyle(
+          color: Colors.white,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
       onTap: () {
-        if (ModalRoute.of(context)?.settings.name != route) {
-          Navigator.pushNamed(context, route);
+        if (!isSelected) {
+          Navigator.pushReplacementNamed(context, route);
         }
       },
     );

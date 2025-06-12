@@ -32,7 +32,7 @@ class AppWidget extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => LoginScreen(),
-        '/home': (context) => const HomePage(),
+        '/Dashboard': (context) => const DashboardPage(),
         '/Ensalamento': (context) => const EnsalamentoPage(),
         '/Salas': (context) => const SalasPage(), // Make sure SalasPage is defined in lib/View/Pages/Salas.dart as 'class SalasPage extends StatelessWidget'
         '/Turmas': (context) => const TurmasPage(),
