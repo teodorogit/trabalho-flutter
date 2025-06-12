@@ -101,7 +101,7 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             Column(
               children: [
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 const Text(
                   "UNICLASS",
                   style: TextStyle(
@@ -117,13 +117,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 15),
                 Image.asset(
                   'assets/images/logo_uniclass_mobile.png',
                   width: 250,
                   height: 250,
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
                   child: Form(

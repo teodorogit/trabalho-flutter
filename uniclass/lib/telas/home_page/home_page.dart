@@ -64,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<List<Map<String, dynamic>>> buscarPrimeirosHorarios(
       int cursoId) async {
     final response = await Supabase.instance.client
-        .from('disciplinas')
+        .from('disciplina')
         .select(
             'nome_disciplina, sala, dia_semana, horario_inicio, horario_fim')
         .eq('curso_id', cursoId)
@@ -285,21 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           SizedBox(height: 20),
                         ],
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    Image.asset('assets/images/fundo_celular.png',
-                        width: MediaQuery.of(context).size.width * 0.55,
-                        height: MediaQuery.of(context).size.height * 0.15),
-                    SizedBox(height: 50),
-                    ElevatedButton.icon(
-                      onPressed: _tirarEShareScreenshot,
-                      icon: Icon(Icons.share),
-                      label: Text('Compartilhar'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        foregroundColor: Colors.white,
-                      ),
-                    ),
+                    ),                  
                   ],
                 ),
               ),

@@ -17,6 +17,10 @@ class _CadastroPageState extends State<CadastroPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController senhaController = TextEditingController();
   final TextEditingController confirmaSenhaController = TextEditingController();
+  
+  final _formKey = GlobalKey<FormState>();
+  final raController = TextEditingController();
+
 
   List<String> cursos = [];
   bool carregandoCursos = true;
@@ -121,15 +125,29 @@ class _CadastroPageState extends State<CadastroPage> {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  TextField(
+                    Form(
+                    key: _formKey,
+                    child: TextFormField(
                     controller: raController,
                     decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Color(0x8078DA49),
-                      labelText: 'RA',
-                      border: OutlineInputBorder(),
-                    ),
+                    filled: true,
+                    fillColor: Color(0x8078DA49),
+                    labelText: 'RA',
+                    border: OutlineInputBorder(),
                   ),
+                  validator: (value) {
+                  if (value == null || value.isEmpty) {
+                  return 'O RA não pode estar vazio';
+                  } else if (value.length < 6) {
+                   return 'O RA deve ter pelo menos 6 caracteres';
+                   } else if (value.length > 12) {
+                   return 'O RA deve ter no máximo 12 caracteres';
+                }
+                  return null;
+                  },
+                  ),
+                  ),
+
                   const SizedBox(height: 10),
                   carregandoCursos
                       ? CircularProgressIndicator()
