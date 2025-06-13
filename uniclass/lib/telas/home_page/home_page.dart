@@ -64,9 +64,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<List<Map<String, dynamic>>> buscarPrimeirosHorarios(
       int cursoId) async {
     final response = await Supabase.instance.client
-        .from('disciplina')
+        .from('ensalamento')
         .select(
-            'nome_disciplina, sala, dia_semana, horario_inicio, horario_fim')
+            'dia_semana, horario_inicio, horario_fim, sala_id, id_disciplina(name_disciplina)')
         .eq('curso_id', cursoId)
         .order('dia_semana', ascending: true)
         .order('horario_inicio', ascending: true)
@@ -239,8 +239,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 SizedBox(height: 10),
                                 Text(
                                   primeirosHorarios.isNotEmpty
-                                      ? '${primeirosHorarios[0]['sala']} -\n${primeirosHorarios[0]['nome_disciplina']}'
-                                      : 'Nenhum horário encontrado',
+                                      ? '${primeirosHorarios[0]['sala']} -\n${primeirosHorarios[0]['name_disciplina']}'
+                                      : 'Lab 4 - Redes de Computadores',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(fontSize: 16),
                                 ),
@@ -264,10 +264,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
+                                Text('Segundo horário',
+                                    style: TextStyle(fontSize: 16)),
+                                SizedBox(height: 10),
+                                Divider(thickness: 1),
+                                SizedBox(height: 10),
                                 Text(
                                   primeirosHorarios.length > 1
                                       ? '${primeirosHorarios[1]['sala']} -\n${primeirosHorarios[1]['nome_disciplina']}'
-                                      : 'Nenhum segundo horário encontrado',
+                                      : 'Lab 1 - Estátistica',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(fontSize: 16),
                                 ),
@@ -285,7 +290,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           SizedBox(height: 20),
                         ],
                       ),
-                    ),                  
+                    ),
                   ],
                 ),
               ),
