@@ -51,7 +51,7 @@ class _CursosPageState extends State<CursosPage> {
     final nomeController = TextEditingController();
     final semestreController = TextEditingController();
     final alunosController = TextEditingController();
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     final screenWidth = MediaQuery.of(context).size.width;
 
     showDialog(
@@ -63,7 +63,7 @@ class _CursosPageState extends State<CursosPage> {
           width: screenWidth * 0.5,
           child: SingleChildScrollView(
             child: Form(
-              key: _formKey,
+              key: formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -84,10 +84,12 @@ class _CursosPageState extends State<CursosPage> {
                     ),
                     keyboardType: TextInputType.number,
                     validator: (value) {
-                      if (value == null || value.isEmpty)
+                      if (value == null || value.isEmpty) {
                         return 'Informe o semestre';
-                      if (int.tryParse(value) == null)
+                      }
+                      if (int.tryParse(value) == null) {
                         return 'Informe um número válido';
+                      }
                       return null;
                     },
                   ),
@@ -100,10 +102,12 @@ class _CursosPageState extends State<CursosPage> {
                     ),
                     keyboardType: TextInputType.number,
                     validator: (value) {
-                      if (value == null || value.isEmpty)
+                      if (value == null || value.isEmpty) {
                         return 'Informe a quantidade';
-                      if (int.tryParse(value) == null)
+                      }
+                      if (int.tryParse(value) == null) {
                         return 'Informe um número válido';
+                      }
                       return null;
                     },
                   ),
@@ -119,7 +123,7 @@ class _CursosPageState extends State<CursosPage> {
           ),
           ElevatedButton(
             onPressed: () async {
-              if (_formKey.currentState?.validate() ?? false) {
+              if (formKey.currentState?.validate() ?? false) {
                 final nome = nomeController.text.trim();
                 final semestre = int.tryParse(semestreController.text.trim()) ?? 0;
                 final alunos = int.tryParse(alunosController.text.trim()) ?? 0;
@@ -174,7 +178,7 @@ class _CursosPageState extends State<CursosPage> {
     final alunosController = TextEditingController(
       text: curso['qnt_alunos']?.toString() ?? '0',
     );
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     final screenWidth = MediaQuery.of(context).size.width;
 
     showDialog(
@@ -186,7 +190,7 @@ class _CursosPageState extends State<CursosPage> {
           width: screenWidth * 0.5,
           child: SingleChildScrollView(
             child: Form(
-              key: _formKey,
+              key: formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -239,7 +243,7 @@ class _CursosPageState extends State<CursosPage> {
           ),
           ElevatedButton(
             onPressed: () async {
-              if (_formKey.currentState?.validate() ?? false) {
+              if (formKey.currentState?.validate() ?? false) {
                 final nome = nomeController.text.trim();
                 final semestre = semestreController.text.trim();
                 final alunos = int.tryParse(alunosController.text.trim()) ?? 0;

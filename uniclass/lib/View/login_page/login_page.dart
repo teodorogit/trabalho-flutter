@@ -4,6 +4,8 @@ import 'package:uniclass/ViewModel/validation.dart';
 import 'package:uniclass/View/Pages/home.dart';
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -138,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.030),
-                  Container(
+                  SizedBox(
                     width: MediaQuery.of(context).size.width,
                     child: const Divider(
                       color: Colors.black,

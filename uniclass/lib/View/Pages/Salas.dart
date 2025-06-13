@@ -57,7 +57,7 @@ class _SalasPageState extends State<SalasPage> {
   final arCondicionadoController = TextEditingController();
   final projetoresController = TextEditingController();
   final caixasSomController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
   final screenWidth = MediaQuery.of(context).size.width;
 
   showDialog(
@@ -69,7 +69,7 @@ class _SalasPageState extends State<SalasPage> {
         width: screenWidth * 0.5,
         child: SingleChildScrollView(
           child: Form(
-            key: _formKey,
+            key: formKey,
             child: Column(
               children: [
                 TextFormField(
@@ -121,7 +121,7 @@ class _SalasPageState extends State<SalasPage> {
         ),
         ElevatedButton(
           onPressed: () async {
-            if (_formKey.currentState?.validate() ?? false) {
+            if (formKey.currentState?.validate() ?? false) {
               try {
                 await supabase.from('salas').insert({
                   'name': nomeController.text.trim(),
@@ -160,7 +160,7 @@ class _SalasPageState extends State<SalasPage> {
   final arCondicionadoController = TextEditingController(text: sala['qnd_ar_condicionado']?.toString() ?? '0');
   final projetoresController = TextEditingController(text: sala['qnd_projetor']?.toString() ?? '0');
   final caixasSomController = TextEditingController(text: sala['qnd_caixa_som']?.toString() ?? '0');
-  final _formKey = GlobalKey<FormState>();
+  final formKey = GlobalKey<FormState>();
   final screenWidth = MediaQuery.of(context).size.width;
 
   showDialog(
@@ -172,7 +172,7 @@ class _SalasPageState extends State<SalasPage> {
         width: screenWidth * 0.5,
         child: SingleChildScrollView(
           child: Form(
-            key: _formKey,
+            key: formKey,
             child: Column(
               children: [
                 TextFormField(
@@ -223,7 +223,7 @@ class _SalasPageState extends State<SalasPage> {
         ),
         ElevatedButton(
           onPressed: () async {
-            if (_formKey.currentState?.validate() ?? false) {
+            if (formKey.currentState?.validate() ?? false) {
               try {
                 await supabase.from('salas').update({
                   'name': nomeController.text.trim(),

@@ -15,312 +15,329 @@ class _EnsalamentoPageState extends State<EnsalamentoPage> {
   List<dynamic> salas = [];
   List<dynamic> cursos = [];
   List<dynamic> professores = [];
+  List<dynamic> disciplinas = [];
 
+  String turmaFiltro = '';
+  String diaFiltro = '';
   bool carregando = true;
-
-  String? turmaFiltradaId;
 
   @override
   void initState() {
     super.initState();
-    fetchAllData();
+    fetchDados();
   }
 
-  Future<void> fetchAllData() async {
+  Future<void> fetchDados() async {
+    final client = Supabase.instance.client;
     try {
-      final client = Supabase.instance.client;
-
-      final ens = await client
-          .from('ensalamento')
-          .select('*, cursos(name), professor(name), salas(name), turmas(name)')
-          .order('created_at', ascending: false);
-
-      final t = await client.from('turmas').select();
-      final s = await client.from('salas').select();
-      final c = await client.from('cursos').select();
-      final p = await client.from('professor').select();
-
+      final dados = await Future.wait([
+        client.from('ensalamento').select(),
+        client.from('turmas').select(),
+        client.from('salas').select(),
+        client.from('cursos').select(),
+        client.from('professor').select(),
+        client.from('Disciplina').select(),
+      ]);
+      
       setState(() {
-        ensalamentos = ens;
-        turmas = t;
-        salas = s;
-        cursos = c;
-        professores = p;
+        ensalamentos = dados[0];
+        turmas = dados[1];
+        salas = dados[2];
+        cursos = dados[3];
+        professores = dados[4];
+        disciplinas = dados[5];
         carregando = false;
       });
     } catch (e) {
-      print('Erro ao carregar dados: $e');
-      setState(() {
-        carregando = false;
-      });
+      print('Erro ao buscar dados: $e');
     }
   }
 
-  void showAddEnsalamentoDialog(BuildContext context, {Map<String, dynamic>? editar}) {
-    final _formKey = GlobalKey<FormState>();
-    String? turmaId = editar?['turma_id']?.toString();
-    String? salaId = editar?['sala_id']?.toString();
-    String? cursoId = editar?['curso_id']?.toString();
-    String? professorId = editar?['professor_id']?.toString();
-    String? diaSemana = editar?['dia_semana'];
-    String? horarioSelecionado;
+  List<dynamic> get ensalamentosFiltrados {
+    return ensalamentos.where((e) {
+      final turmaOk = turmaFiltro.isEmpty || e['turma_id'].toString() == turmaFiltro;
+      final diaOk = diaFiltro.isEmpty || e['dia_semana'] == diaFiltro;
+      return turmaOk && diaOk;
+    }).toList();
+  }
 
-    if (editar != null) {
-      final inicio = editar['horario_inicio'];
-      if (inicio == '19:00') {
-        horarioSelecionado = '1';
-      } else if (inicio == '20:55') {
-        horarioSelecionado = '2';
-      }
-    }
+  void showEnsalamentoDialog({Map<String, dynamic>? ensalamento}) {
+    final _formKey = GlobalKey<FormState>();
+    int? turmaId = ensalamento?['turma_id'];
+    int? salaId = ensalamento?['sala_id'];
+    int? cursoId = ensalamento?['curso_id'];
+    int? professorId = ensalamento?['professor_id'];
+    String diaSemana = ensalamento?['dia_semana'] ?? 'Segunda';
+    int? idDisciplina = ensalamento?['Id_disciplina'];
+    TimeOfDay? inicio = ensalamento?['horario_inicio'] != null
+        ? TimeOfDay.fromDateTime(DateTime.parse('2020-01-01 ${ensalamento!['horario_inicio']}'))
+        : null;
+    TimeOfDay? fim = ensalamento?['horario_fim'] != null
+        ? TimeOfDay.fromDateTime(DateTime.parse('2020-01-01 ${ensalamento!['horario_fim']}'))
+        : null;
 
     showDialog(
       context: context,
-      barrierDismissible: false,
-      builder: (_) => StatefulBuilder(
-        builder: (context, setStateDialog) => AlertDialog(
-          title: Text(editar != null ? 'Editar Ensalamento' : 'Criar Ensalamento'),
-          content: Form(
-            key: _formKey,
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  DropdownButtonFormField<String>(
-                    value: turmaId,
-                    hint: const Text('Selecione a turma'),
-                    items: turmas.map((t) {
-                      return DropdownMenuItem(
-                        value: t['turma_id'].toString(),
+      builder: (_) => AlertDialog(
+        title: Text(ensalamento == null ? 'Novo Ensalamento' : 'Editar Ensalamento'),
+        content: StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DropdownButtonFormField<int>(
+                      value: idDisciplina,
+                      decoration: const InputDecoration(labelText: 'Disciplina'),
+                      items: disciplinas.map<DropdownMenuItem<int>>((d) {
+                        return DropdownMenuItem<int>(
+                          value: d['id'],
+                          child: Text(d['name_disciplina']),
+                        );
+                      }).toList(),
+                      onChanged: (val) => setStateDialog(() => idDisciplina = val),
+                      validator: (val) {
+                        if (val == null) return 'Selecione uma disciplina';
+                        return null;
+                      },
+                    ),
+                    DropdownButtonFormField(
+                      value: turmaId,
+                      decoration: const InputDecoration(labelText: 'Turma'),
+                      items: turmas.map<DropdownMenuItem<int>>((t) => DropdownMenuItem(
+                        value: t['turma_id'],
                         child: Text(t['name']),
-                      );
-                    }).toList(),
-                    onChanged: (val) => turmaId = val,
-                    validator: (val) => val == null ? 'Selecione a turma' : null,
-                  ),
-                  const SizedBox(height: 10),
-                  DropdownButtonFormField<String>(
-                    value: cursoId,
-                    hint: const Text('Selecione o curso'),
-                    items: cursos.map((c) {
-                      return DropdownMenuItem(
-                        value: c['curso_id'].toString(),
-                        child: Text(c['name']),
-                      );
-                    }).toList(),
-                    onChanged: (val) => cursoId = val,
-                    validator: (val) => val == null ? 'Selecione o curso' : null,
-                  ),
-                  const SizedBox(height: 10),
-                  DropdownButtonFormField<String>(
-                    value: professorId,
-                    hint: const Text('Selecione o professor'),
-                    items: professores.map((p) {
-                      return DropdownMenuItem(
-                        value: p['professor_id'].toString(),
-                        child: Text(p['name']),
-                      );
-                    }).toList(),
-                    onChanged: (val) => professorId = val,
-                    validator: (val) => val == null ? 'Selecione o professor' : null,
-                  ),
-                  const SizedBox(height: 10),
-                  DropdownButtonFormField<String>(
-                    value: salaId,
-                    hint: const Text('Selecione a sala'),
-                    items: salas.map((s) {
-                      return DropdownMenuItem(
-                        value: s['sala_id'].toString(),
+                      )).toList(),
+                      onChanged: (val) => setStateDialog(() => turmaId = val),
+                    ),
+                    DropdownButtonFormField(
+                      value: salaId,
+                      decoration: const InputDecoration(labelText: 'Sala'),
+                      items: salas.map<DropdownMenuItem<int>>((s) => DropdownMenuItem(
+                        value: s['sala_id'],
                         child: Text(s['name']),
-                      );
-                    }).toList(),
-                    onChanged: (val) => salaId = val,
-                    validator: (val) => val == null ? 'Selecione a sala' : null,
-                  ),
-                  const SizedBox(height: 10),
-                  DropdownButtonFormField<String>(
-                    value: diaSemana,
-                    hint: const Text('Dia da semana'),
-                    items: ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta']
-                        .map((dia) => DropdownMenuItem(
-                              value: dia,
-                              child: Text(dia),
-                            ))
-                        .toList(),
-                    onChanged: (val) => diaSemana = val,
-                    validator: (val) => val == null ? 'Informe o dia' : null,
-                  ),
-                  const SizedBox(height: 20),
-                  const Text('Selecione o horário:'),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: RadioListTile<String>(
-                          title: const Text('1º Horário\n19:00 - 20:45'),
-                          value: '1',
-                          groupValue: horarioSelecionado,
-                          onChanged: (val) => setStateDialog(() => horarioSelecionado = val),
+                      )).toList(),
+                      onChanged: (val) => setStateDialog(() => salaId = val),
+                    ),
+                    DropdownButtonFormField(
+                      value: cursoId,
+                      decoration: const InputDecoration(labelText: 'Curso'),
+                      items: cursos.map<DropdownMenuItem<int>>((c) => DropdownMenuItem(
+                        value: c['curso_id'],
+                        child: Text(c['name']),
+                      )).toList(),
+                      onChanged: (val) => setStateDialog(() => cursoId = val),
+                    ),
+                    DropdownButtonFormField(
+                      value: professorId,
+                      decoration: const InputDecoration(labelText: 'Professor'),
+                      items: professores.map<DropdownMenuItem<int>>((p) => DropdownMenuItem(
+                        value: p['professor_id'],
+                        child: Text(p['name']),
+                      )).toList(),
+                      onChanged: (val) => setStateDialog(() => professorId = val),
+                    ),
+                    DropdownButtonFormField(
+                      value: diaSemana,
+                      decoration: const InputDecoration(labelText: 'Dia da semana'),
+                      items: ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta']
+                          .map((d) => DropdownMenuItem(value: d, child: Text(d)))
+                          .toList(),
+                      onChanged: (val) => setStateDialog(() => diaSemana = val!),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text('Horário:'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            setStateDialog(() {
+                              inicio = const TimeOfDay(hour: 19, minute: 0);
+                              fim = const TimeOfDay(hour: 20, minute: 45);
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: inicio?.hour == 19 ? Colors.green : null,
+                          ),
+                          child: const Text('1º Horário'),
                         ),
-                      ),
-                      Expanded(
-                        child: RadioListTile<String>(
-                          title: const Text('2º Horário\n20:55 - 22:30'),
-                          value: '2',
-                          groupValue: horarioSelecionado,
-                          onChanged: (val) => setStateDialog(() => horarioSelecionado = val),
+                        ElevatedButton(
+                          onPressed: () {
+                            setStateDialog(() {
+                              inicio = const TimeOfDay(hour: 20, minute: 55);
+                              fim = const TimeOfDay(hour: 22, minute: 30);
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: inicio?.hour == 20 ? Colors.green : null,
+                          ),
+                          child: const Text('2º Horário'),
                         ),
-                      ),
-                    ],
-                  ),
-                ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancelar')),
-            ElevatedButton(
-                onPressed: () async {
-                  if ((_formKey.currentState?.validate() ?? false) &&
-                      horarioSelecionado != null) {
-                    String inicio = '';
-                    String fim = '';
-
-                    if (horarioSelecionado == '1') {
-                      inicio = '19:00';
-                      fim = '20:45';
-                    } else if (horarioSelecionado == '2') {
-                      inicio = '20:55';
-                      fim = '22:30';
-                    }
-
-                    try {
-                      if (editar != null) {
-                        await Supabase.instance.client
-                            .from('ensalamento')
-                            .update({
-                              'turma_id': int.parse(turmaId!),
-                              'sala_id': int.parse(salaId!),
-                              'curso_id': int.parse(cursoId!),
-                              'professor_id': int.parse(professorId!),
-                              'dia_semana': diaSemana,
-                              'horario_inicio': inicio,
-                              'horario_fim': fim,
-                            })
-                            .eq('id', editar['id']);
-                      } else {
-                        await Supabase.instance.client.from('ensalamento').insert({
-                          'turma_id': int.parse(turmaId!),
-                          'sala_id': int.parse(salaId!),
-                          'curso_id': int.parse(cursoId!),
-                          'professor_id': int.parse(professorId!),
-                          'dia_semana': diaSemana,
-                          'horario_inicio': inicio,
-                          'horario_fim': fim,
-                        });
-                      }
-
-                      Navigator.pop(context);
-                      fetchAllData();
-
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                            content: Text(
-                                editar != null
-                                    ? 'Ensalamento atualizado com sucesso'
-                                    : 'Ensalamento salvo com sucesso')),
-                      );
-                    } catch (e) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Erro ao salvar: $e')),
-                      );
-                    }
-                  }
-                },
-                child: const Text('Salvar')),
-          ],
+            );
+          },
         ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+          ElevatedButton(
+            onPressed: () async {
+              if (_formKey.currentState?.validate() ?? false) {
+                final inicioStr = '${inicio!.hour.toString().padLeft(2, '0')}:${inicio!.minute.toString().padLeft(2, '0')}';
+                final fimStr = '${fim!.hour.toString().padLeft(2, '0')}:${fim!.minute.toString().padLeft(2, '0')}';
+
+                final dados = {
+                  'turma_id': turmaId,
+                  'sala_id': salaId,
+                  'curso_id': cursoId,
+                  'professor_id': professorId,
+                  'dia_semana': diaSemana,
+                  'horario_inicio': inicioStr,
+                  'horario_fim': fimStr,
+                  'Id_disciplina': idDisciplina,
+                };
+
+                final client = Supabase.instance.client;
+                try {
+                  if (ensalamento == null) {
+                    await client.from('ensalamento').insert(dados);
+                  } else {
+                    await client
+                        .from('ensalamento')  
+                        .update(dados)
+                        .eq('id', ensalamento['id']);
+                  }
+                  // ignore: use_build_context_synchronously
+                  Navigator.pop(context);
+                  fetchDados();
+                } catch (e) {
+                  print('Erro ao salvar: $e');
+                }
+              }
+            },
+            child: const Text('Salvar'),
+          )
+        ],
       ),
     );
   }
 
+  void excluirEnsalamento(int id) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmar exclusão'),
+        content: const Text('Tem certeza que deseja excluir este ensalamento?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Excluir'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        await Supabase.instance.client.from('ensalamento').delete().eq('id', id);
+        fetchDados();
+      } catch (e) {
+        print('Erro ao excluir: $e');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final ensalamentosFiltrados = turmaFiltradaId == null
-        ? ensalamentos
-        : ensalamentos.where((e) => e['turma_id'].toString() == turmaFiltradaId).toList();
-
     return AppLayout(
       title: 'Ensalamento',
       child: carregando
           ? const Center(child: CircularProgressIndicator())
           : Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: DropdownButtonFormField<String>(
-                          value: turmaFiltradaId,
-                          hint: const Text('Filtrar por turma'),
-                          isExpanded: true,
-                          items: turmas.map((t) {
-                            return DropdownMenuItem(
-                              value: t['turma_id'].toString(),
-                              child: Text(t['name']),
-                            );
-                          }).toList()
-                            ..insert(
-                              0,
-                              const DropdownMenuItem(value: null, child: Text('Todas as turmas')),
-                            ),
-                          onChanged: (val) {
-                            setState(() {
-                              turmaFiltradaId = val;
-                            });
-                          },
-                        ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: DropdownButtonFormField(
+                        value: turmaFiltro.isNotEmpty ? turmaFiltro : null,
+                        hint: const Text('Filtrar por turma'),
+                        items: turmas.map((t) => DropdownMenuItem(
+                          value: t['turma_id'].toString(),
+                          child: Text(t['name']),
+                        )).toList(),
+                        onChanged: (val) {
+                          setState(() => turmaFiltro = val ?? '');
+                        },
                       ),
-                      const SizedBox(width: 16),
-                      ElevatedButton.icon(
-                        onPressed: () => showAddEnsalamentoDialog(context),
-                        icon: const Icon(Icons.add),
-                        label: const Text('Novo Ensalamento'),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: DropdownButtonFormField(
+                        value: diaFiltro.isNotEmpty ? diaFiltro : null,
+                        hint: const Text('Filtrar por dia'),
+                        items: ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta']
+                            .map((d) => DropdownMenuItem(value: d, child: Text(d)))
+                            .toList(),
+                        onChanged: (val) {
+                          setState(() => diaFiltro = val ?? '');
+                        },
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          turmaFiltro = '';
+                          diaFiltro = '';
+                        });
+                      },
+                      child: const Text('Limpar Filtros'),
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton.icon(
+                      onPressed: () => showEnsalamentoDialog(),
+                      icon: const Icon(Icons.add),
+                      label: const Text('Novo'),
+                    )
+                  ],
                 ),
+                const SizedBox(height: 16),
                 Expanded(
                   child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     itemCount: ensalamentosFiltrados.length,
                     itemBuilder: (context, index) {
-                      final ens = ensalamentosFiltrados[index];
+                      final e = ensalamentosFiltrados[index];
+                      final turmaNome = turmas.firstWhere((t) => t['turma_id'] == e['turma_id'], orElse: () => {'name': 'Desconhecida'})['name'];
+                      final salaNome = salas.firstWhere((s) => s['sala_id'] == e['sala_id'], orElse: () => {'name': 'Desconhecida'})['name'];
+                      final professorNome = professores.firstWhere((p) => p['professor_id'] == e['professor_id'], orElse: () => {'name': '---'})['name'];
+                      final cursoNome = cursos.firstWhere((c) => c['curso_id'] == e['curso_id'], orElse: () => {'name': '---'})['name'];
+                      final disciplinaNome = disciplinas.firstWhere((d) => d['id'] == e['id_disciplina'], orElse: () => {'name_disciplina': '---'})['name_disciplina'];
+
                       return Card(
                         margin: const EdgeInsets.symmetric(vertical: 8),
-                        color: const Color.fromARGB(255, 238, 239, 237),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        child: ListTile(
+                          title: Text(disciplinaNome),
+                          subtitle: Text('Turma: $turmaNome | Sala: $salaNome\nDia: ${e['dia_semana']} - ${e['horario_inicio']} até ${e['horario_fim']}\nCurso: $cursoNome | Professor: $professorNome'),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text('Curso: ${ens['cursos']['name'] ?? '---'}'),
-                              Text('Turma: ${ens['turmas']['name'] ?? '---'}'),
-                              Text('Professor: ${ens['professor']['name'] ?? '---'}'),
-                              Text('Sala: ${ens['salas']['name'] ?? '---'}'),
-                              Text('Dia: ${ens['dia_semana'] ?? '---'}'),
-                              Text('Horário: ${ens['horario_inicio']} - ${ens['horario_fim']}'),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: IconButton(
-                                  icon: const Icon(Icons.edit, color: Colors.green),
-                                  onPressed: () {
-                                    showAddEnsalamentoDialog(context, editar: ens);
-                                  },
-                                ),
+                              IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () => showEnsalamentoDialog(ensalamento: e),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete, color: Colors.red),
+                                onPressed: () => excluirEnsalamento(e['id']),
                               ),
                             ],
                           ),
@@ -328,7 +345,7 @@ class _EnsalamentoPageState extends State<EnsalamentoPage> {
                       );
                     },
                   ),
-                ),
+                )
               ],
             ),
     );

@@ -41,7 +41,7 @@ class AppLayout extends StatelessWidget {
                 SidebarItem(label: 'Turmas', route: '/Turmas', currentRoute: currentRoute),
                 SidebarItem(label: 'Cursos', route: '/Cursos', currentRoute: currentRoute),
                 SidebarItem(label: 'Perfil', route: '/Perfil', currentRoute: currentRoute),
-                const Spacer(),
+                Spacer(),
                 ListTile(
                   leading: Icon(Icons.logout, color: Colors.white),
                   title: Text('Sair', style: TextStyle(color: Colors.white)),

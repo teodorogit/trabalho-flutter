@@ -53,7 +53,7 @@ class _TurmasPageState extends State<TurmasPage> {
     final nomeController = TextEditingController();
     final periodoController = TextEditingController();
     final alunosController = TextEditingController();
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     final screenWidth = MediaQuery.of(context).size.width;
 
     showDialog(
@@ -65,7 +65,7 @@ class _TurmasPageState extends State<TurmasPage> {
           width: screenWidth * 0.5,
           child: SingleChildScrollView(
             child: Form(
-              key: _formKey,
+              key: formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -92,10 +92,12 @@ class _TurmasPageState extends State<TurmasPage> {
                     ),
                     keyboardType: TextInputType.number,
                     validator: (value) {
-                      if (value == null || value.isEmpty)
+                      if (value == null || value.isEmpty) {
                         return 'Informe a quantidade';
-                      if (int.tryParse(value) == null)
+                      }
+                      if (int.tryParse(value) == null) {
                         return 'Informe um número válido';
+                      }
                       return null;
                     },
                   ),
@@ -111,7 +113,7 @@ class _TurmasPageState extends State<TurmasPage> {
           ),
           ElevatedButton(
             onPressed: () async {
-              if (_formKey.currentState?.validate() ?? false) {
+              if (formKey.currentState?.validate() ?? false) {
                 final nome = nomeController.text.trim();
                 final periodo = periodoController.text.trim();
                 final alunos =
@@ -166,7 +168,7 @@ class _TurmasPageState extends State<TurmasPage> {
         TextEditingController(text: turma['periodo']?.toString() ?? '');
     final alunosController =
         TextEditingController(text: turma['qnt_alunos']?.toString() ?? '0');
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     final screenWidth = MediaQuery.of(context).size.width;
 
     showDialog(
@@ -178,7 +180,7 @@ class _TurmasPageState extends State<TurmasPage> {
           width: screenWidth * 0.5,
           child: SingleChildScrollView(
             child: Form(
-              key: _formKey,
+              key: formKey,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -205,10 +207,12 @@ class _TurmasPageState extends State<TurmasPage> {
                     ),
                     keyboardType: TextInputType.number,
                     validator: (value) {
-                      if (value == null || value.isEmpty)
+                      if (value == null || value.isEmpty) {
                         return 'Informe a quantidade de alunos';
-                      if (int.tryParse(value) == null)
+                      }
+                      if (int.tryParse(value) == null) {
                         return 'Informe um número válido';
+                      }
                       return null;
                     },
                   ),
@@ -224,7 +228,7 @@ class _TurmasPageState extends State<TurmasPage> {
           ),
           ElevatedButton(
             onPressed: () async {
-              if (_formKey.currentState?.validate() ?? false) {
+              if (formKey.currentState?.validate() ?? false) {
                 final nome = nomeController.text.trim();
                 final periodo = periodoController.text.trim();
                 final alunos =

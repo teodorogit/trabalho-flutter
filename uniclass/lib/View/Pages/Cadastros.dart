@@ -94,8 +94,8 @@ class _CadastrosPageState extends State<CadastrosPage> {
     final emailController = TextEditingController(text: user['email']);
     final telefoneController = TextEditingController(text: user['phone'] ?? '');
     final senhaController = TextEditingController();
-    final _formKey = GlobalKey<FormState>();
-    bool _obscureText = true;
+    final formKey = GlobalKey<FormState>();
+    bool obscureText = true;
 
     final bool isCurrentUser = userId == user['user_id'];
 
@@ -110,7 +110,7 @@ class _CadastrosPageState extends State<CadastrosPage> {
           content: SizedBox(
             width: screenWidth * 0.5,
             child: Form(
-              key: _formKey,
+              key: formKey,
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -135,17 +135,17 @@ class _CadastrosPageState extends State<CadastrosPage> {
                         hintText: 'Senha de no mínimo 6 dígitos',
                         suffixIcon: isCurrentUser
                             ? IconButton(
-                                icon: Icon(_obscureText
+                                icon: Icon(obscureText
                                     ? Icons.visibility
                                     : Icons.visibility_off),
                                 onPressed: () {
-                                  _obscureText = !_obscureText;
+                                  obscureText = !obscureText;
                                   (context as Element).markNeedsBuild();
                                 },
                               )
                             : null,
                       ),
-                      obscureText: _obscureText,
+                      obscureText: obscureText,
                       enabled: isCurrentUser,
                       validator: (value) {
                         if (!isCurrentUser && (value?.isNotEmpty ?? false)) {
@@ -180,7 +180,7 @@ class _CadastrosPageState extends State<CadastrosPage> {
             ),
             ElevatedButton(
               onPressed: () async {
-                if (_formKey.currentState!.validate()) {
+                if (formKey.currentState!.validate()) {
                   try {
                     await supabase.from('webUser').update({
                       'name': nomeController.text,
@@ -219,8 +219,8 @@ class _CadastrosPageState extends State<CadastrosPage> {
     final telefoneController = TextEditingController();
     final emailController = TextEditingController();
     final senhaController = TextEditingController();
-    final _formKey = GlobalKey<FormState>();
-    bool _obscureText = true;
+    final formKey = GlobalKey<FormState>();
+    bool obscureText = true;
 
     showDialog(
       context: context,
@@ -234,7 +234,7 @@ class _CadastrosPageState extends State<CadastrosPage> {
             width: screenWidth * 0.5,
             child: SingleChildScrollView(
               child: Form(
-                key: _formKey,
+                key: formKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -270,16 +270,16 @@ class _CadastrosPageState extends State<CadastrosPage> {
                         labelText: 'Senha',
                         hintText: 'Senha de no mínimo 6 dígitos',
                         suffixIcon: IconButton(
-                          icon: Icon(_obscureText
+                          icon: Icon(obscureText
                               ? Icons.visibility
                               : Icons.visibility_off),
                           onPressed: () {
-                            _obscureText = !_obscureText;
+                            obscureText = !obscureText;
                             (context as Element).markNeedsBuild();
                           },
                         ),
                       ),
-                      obscureText: _obscureText,
+                      obscureText: obscureText,
                       validator: (value) => value == null || value.isEmpty
                           ? 'Informe a senha'
                           : null,
@@ -296,7 +296,7 @@ class _CadastrosPageState extends State<CadastrosPage> {
             ),
             ElevatedButton(
               onPressed: () async {
-                if (_formKey.currentState!.validate()) {
+                if (formKey.currentState!.validate()) {
                   try {
                     final authResponse = await supabase.auth.signUp(
                       email: emailController.text,
